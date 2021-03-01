@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Birds Explorer</string>
+
+    // Nav menu
+    <string name="nav_menu_action_gallery">Gallery</string>
+    <string name="nav_menu_action_add_bird">Add bird</string>
+    <string name="nav_menu_action_map">Map</string>
+    <string name="nav_menu_action_profile">Profile</string>
 </resources>
