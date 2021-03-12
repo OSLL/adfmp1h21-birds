@@ -6,8 +6,9 @@
     android:layout_height="@dimen/gallery_card_height"
     android:layout_gravity="center"
     android:layout_marginStart="@dimen/medium"
+    android:layout_marginTop="@dimen/medium"
     android:layout_marginEnd="@dimen/medium"
-    android:layout_marginBottom="@dimen/big"
+    android:layout_marginBottom="@dimen/medium"
     android:background="@drawable/bg_round_corners"
     android:elevation="5dp"
     android:orientation="vertical">
@@ -38,17 +39,16 @@
                 android:id="@+id/birdName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/authorName"
+                android:id="@+id/birdSeenTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -59,17 +59,9 @@
                 android:id="@+id/birdLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <TextView
-                android:id="@+id/birdSeenTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </LinearLayout>

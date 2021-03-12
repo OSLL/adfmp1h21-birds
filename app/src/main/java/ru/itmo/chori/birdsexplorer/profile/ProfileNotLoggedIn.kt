@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_profile_not_logged_in.*
@@ -56,7 +55,8 @@ class ProfileNotLoggedIn : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == RequestCode.SIGN_IN.value) {
-            val response = IdpResponse.fromResultIntent(data)
+//            FIXME: Handle error
+//            val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
                 loadLoggedInUserFragment()
