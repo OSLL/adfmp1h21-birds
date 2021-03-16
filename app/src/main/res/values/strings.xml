@@ -16,5 +16,9 @@
     <string name="login">Log in</string>
     <string name="logout">Log out</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    // Bird page
+    <string name="bird_page_photo_description">A picture of %s</string>
+    <string name="bird_page_seen_at_title">Seen at:</string>
+
+    <string name="hello_blank_fragment">Hello bird fragment</string>
 </resources>

@@ -5,4 +5,9 @@
     <dimen name="big">48dp</dimen>
 
     <dimen name="gallery_card_height">270dp</dimen>
+
+    <dimen name="bird_page_photo_height">300dp</dimen>
+    <dimen name="bird_page_map_height">400dp</dimen>
+
+    <dimen name="corner_radius">10dp</dimen>
 </resources>

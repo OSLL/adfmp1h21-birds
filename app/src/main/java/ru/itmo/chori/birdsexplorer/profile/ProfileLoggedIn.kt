@@ -33,7 +33,7 @@ class ProfileLoggedIn : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        profile_welcome.text = resources.getString(R.string.profile_logged_welcome, user?.displayName)
+        profile_welcome.text = getString(R.string.profile_logged_welcome, user?.displayName)
         profile_logout.setOnClickListener {
             context?.let {
                 AuthUI.getInstance().signOut(it).addOnCompleteListener {

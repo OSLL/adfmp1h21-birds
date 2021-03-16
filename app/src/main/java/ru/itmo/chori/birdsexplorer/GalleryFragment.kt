@@ -70,10 +70,17 @@ class GalleryFragment : Fragment() {
                     holder.birdLocation.text = addresses[0].getAddressLine(0)
                 }
 
-                Glide.with(this@GalleryFragment)
+                Glide.with(activity!!)
                     .load(storage.child(model.image))
                     .placeholder(R.drawable.placeholder_image)
                     .into(holder.birdImage)
+                holder.birdImage.contentDescription = getString(
+                    R.string.gallery_card_image_caption, model.name
+                )
+
+                holder.itemView.setOnClickListener {
+                    loadFragmentOnStack(BirdFragment.newInstance(model))
+                }
             }
         }
     }
@@ -105,6 +112,19 @@ class GalleryFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         firestoreAdapter.startListening()
+    }
+
+    private fun loadFragmentOnStack(fragment: Fragment) {
+        fragmentManager?.let {
+            with(it.beginTransaction()) {
+                val tag = FragmentTags.GALLERY.toString()
+
+                replace(R.id.app_content, fragment, tag)
+                addToBackStack(tag)
+
+                commit()
+            }
+        }
     }
 
     companion object {
