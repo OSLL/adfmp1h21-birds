@@ -52,7 +52,7 @@ class BirdFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Glide.with(activity!!)
+        Glide.with(requireActivity())
             .load(storage.child(bird.image))
             .placeholder(R.drawable.placeholder_image)
             .into(birdPagePhoto)

@@ -70,7 +70,7 @@ class GalleryFragment : Fragment() {
                     holder.birdLocation.text = addresses[0].getAddressLine(0)
                 }
 
-                Glide.with(activity!!)
+                Glide.with(requireActivity())
                     .load(storage.child(model.image))
                     .placeholder(R.drawable.placeholder_image)
                     .into(holder.birdImage)

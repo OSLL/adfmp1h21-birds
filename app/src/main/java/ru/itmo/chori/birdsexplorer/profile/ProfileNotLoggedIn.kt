@@ -41,7 +41,7 @@ class ProfileNotLoggedIn : Fragment() {
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
                         .build(),
-                    RequestCode.SIGN_IN.value
+                    RequestCode.SIGN_IN.ordinal
                 )
 
                 return@setOnClickListener
@@ -54,7 +54,7 @@ class ProfileNotLoggedIn : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == RequestCode.SIGN_IN.value) {
+        if (requestCode == RequestCode.SIGN_IN.ordinal) {
 //            FIXME: Handle error
 //            val response = IdpResponse.fromResultIntent(data)
 
