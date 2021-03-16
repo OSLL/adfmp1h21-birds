@@ -1,5 +1,6 @@
 package ru.itmo.chori.birdsexplorer
 
+import android.location.Geocoder
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,26 +10,37 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.fragment_gallery.*
 import ru.itmo.chori.birdsexplorer.data.BirdModel
+import java.text.DateFormat
+import java.util.*
 
 class GalleryFragment : Fragment() {
     private lateinit var firestoreAdapter: FirestoreRecyclerAdapter<BirdModel, BirdsViewHolder>
     private lateinit var firestore: FirebaseFirestore
+    private lateinit var geocoder: Geocoder
+    private lateinit var storage: StorageReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         firestore = FirebaseFirestore.getInstance()
+        geocoder = Geocoder(context)
+        storage = Firebase.storage.reference
 
         val query = firestore.collection("birds")
         val options = with(FirestoreRecyclerOptions.Builder<BirdModel>()) {
             setQuery(query, BirdModel::class.java)
         }.build()
 
+        // TODO: For paging – https://github.com/firebase/FirebaseUI-Android/tree/master/firestore#using-the-firestorepagingadapter
         firestoreAdapter = object : FirestoreRecyclerAdapter<BirdModel, BirdsViewHolder>(options) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BirdsViewHolder {
                 val view = with(LayoutInflater.from(parent.context)) {
@@ -38,14 +50,31 @@ class GalleryFragment : Fragment() {
                 return BirdsViewHolder(view)
             }
 
+            private val dateFormatter = DateFormat.getDateInstance(DateFormat.DEFAULT)
             override fun onBindViewHolder(
                 holder: BirdsViewHolder,
                 position: Int,
                 model: BirdModel
             ) {
                 holder.birdName.text = model.name
-            }
+                holder.birdSeenTime.text = dateFormatter.format(model.seen_at.toDate())
 
+                // TODO: Possible too long waiting time
+                // TODO: Should check Geocoder.isPresent()
+                val addresses = geocoder.getFromLocation(
+                    model.location.latitude,
+                    model.location.longitude,
+                    1
+                )
+                if (addresses != null && addresses.isNotEmpty()) {
+                    holder.birdLocation.text = addresses[0].getAddressLine(0)
+                }
+
+                Glide.with(this@GalleryFragment)
+                    .load(storage.child(model.image))
+                    .placeholder(R.drawable.placeholder_image)
+                    .into(holder.birdImage)
+            }
         }
     }
 
