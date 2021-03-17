@@ -36,6 +36,8 @@ class ProfileLoggedIn : Fragment() {
             user = it.getParcelable(ARG_USER)!!
         }
 
+        setHasOptionsMenu(true)
+
         firestore = FirebaseFirestore.getInstance()
         storage = Firebase.storage.reference
 
@@ -71,6 +73,23 @@ class ProfileLoggedIn : Fragment() {
                 hideListIfNoData(itemCount)
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.action_bar_profile_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when(item.itemId) {
+        R.id.action_logout -> {
+            AuthUI.getInstance().signOut(requireContext()).addOnCompleteListener {
+                loadFragment(ProfileNotLoggedIn.newInstance())
+            }
+
+            true
+        }
+
+        else -> super.onOptionsItemSelected(item)
     }
 
     private fun hideListIfNoData(dataCount: Int) {

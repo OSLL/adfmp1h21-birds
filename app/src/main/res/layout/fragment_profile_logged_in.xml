@@ -19,16 +19,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/profile_logout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/logout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_welcome" />
-
     <View
         android:id="@+id/dividerLogoutButton"
         android:layout_width="match_parent"
@@ -36,7 +26,7 @@
         android:layout_marginTop="@dimen/medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_logout" />
+        app:layout_constraintTop_toBottomOf="@+id/profile_welcome" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/groupNoBirds"

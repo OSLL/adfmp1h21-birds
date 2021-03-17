@@ -11,7 +11,7 @@
     <string name="profile_not_logged_text">You are not logged in. Tell us, who you are!</string>
     <string name="profile_logged_welcome">Welcome back, &lt;b>%s&lt;/b></string>
     <string name="login">Log in</string>
-    <string name="logout">Log out</string>
+    <string name="logout">Logout</string>
     <string name="your_birds">Your birds (top is most recently added)</string>
     <string name="no_birds">You did not add any bird yet! 🐣</string>
 
