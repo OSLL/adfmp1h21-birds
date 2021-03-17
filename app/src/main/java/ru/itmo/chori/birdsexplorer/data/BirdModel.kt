@@ -12,14 +12,16 @@ data class BirdModel(
     val image: String = "",
     val seen_at: Timestamp = Timestamp.now(),
     val location: GeoPoint = GeoPoint(0.0, 0.0),
-    val geohash: String = ""
+    val geohash: String = "",
+    val author: String = ""
 ) : AbstractSafeParcelable() {
     constructor(parcel: Parcel) : this(
         name = parcel.readString()!!,
         image = parcel.readString()!!,
         seen_at = parcel.readParcelable(Timestamp::class.java.classLoader)!!,
         location = GeoPoint(parcel.readDouble(), parcel.readDouble()),
-        geohash = parcel.readString()!!
+        geohash = parcel.readString()!!,
+        author = parcel.readString()!!
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -29,6 +31,7 @@ data class BirdModel(
         parcel.writeParcelable(seen_at, flags)
         parcel.writeParcelable(location)
         parcel.writeString(geohash)
+        parcel.writeString(author)
         SafeParcelWriter.finishObjectHeader(parcel, id)
     }
 

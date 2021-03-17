@@ -56,7 +56,7 @@ class BirdFragment : Fragment(), OnMapReadyCallback {
             .placeholder(R.drawable.placeholder_image)
             .into(birdPagePhoto)
         birdPagePhoto.contentDescription = getString(
-            R.string.bird_page_photo_description, bird.name
+            R.string.bird_photo_description, bird.name
         )
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment

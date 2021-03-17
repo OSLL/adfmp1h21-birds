@@ -75,7 +75,7 @@ class GalleryFragment : Fragment() {
                     .placeholder(R.drawable.placeholder_image)
                     .into(holder.birdImage)
                 holder.birdImage.contentDescription = getString(
-                    R.string.gallery_card_image_caption, model.name
+                    R.string.bird_photo_description, model.name
                 )
 
                 holder.itemView.setOnClickListener {

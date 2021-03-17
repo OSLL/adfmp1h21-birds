@@ -1,24 +1,85 @@
 package ru.itmo.chori.birdsexplorer.profile
 
 import android.os.Bundle
+import android.text.TextUtils
+import android.view.*
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.fragment_profile_logged_in.*
 import ru.itmo.chori.birdsexplorer.R
+import ru.itmo.chori.birdsexplorer.data.BirdModel
 
 private const val ARG_USER = "user"
 
 class ProfileLoggedIn : Fragment() {
-    private var user: FirebaseUser? = null
+    private lateinit var user: FirebaseUser
+    private lateinit var firestoreAdapter: FirestoreRecyclerAdapter<BirdModel, BirdsViewHolder>
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var storage: StorageReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            user = it.getParcelable(ARG_USER)
+            user = it.getParcelable(ARG_USER)!!
+        }
+
+        firestore = FirebaseFirestore.getInstance()
+        storage = Firebase.storage.reference
+
+        val query = firestore.collection("birds")
+            .whereEqualTo("author", user.uid)
+        val options = with(FirestoreRecyclerOptions.Builder<BirdModel>()) {
+            setQuery(query, BirdModel::class.java)
+        }.build()
+
+        firestoreAdapter = object : FirestoreRecyclerAdapter<BirdModel, BirdsViewHolder>(options) {
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BirdsViewHolder {
+                val view = with(LayoutInflater.from(parent.context)) {
+                    inflate(R.layout.profile_bird_card, parent, false)
+                }
+
+                return BirdsViewHolder(view)
+            }
+
+            override fun onBindViewHolder(
+                holder: BirdsViewHolder,
+                position: Int,
+                model: BirdModel
+            ) {
+                holder.birdName.text = model.name
+                Glide.with(requireActivity())
+                    .load(storage.child(model.image))
+                    .into(holder.birdImage)
+            }
+
+            override fun onDataChanged() {
+                super.onDataChanged()
+
+                hideListIfNoData(itemCount)
+            }
+        }
+    }
+
+    private fun hideListIfNoData(dataCount: Int) {
+        if (dataCount == 0) {
+            groupNoBirds.visibility = View.VISIBLE
+            groupBirdsList.visibility = View.GONE
+        } else {
+            groupNoBirds.visibility = View.GONE
+            groupBirdsList.visibility = View.VISIBLE
         }
     }
 
@@ -33,7 +94,13 @@ class ProfileLoggedIn : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        profile_welcome.text = getString(R.string.profile_logged_welcome, user?.displayName)
+        val escapedUsername = TextUtils.htmlEncode(user.displayName)
+        val profileWelcomeText = getString(R.string.profile_logged_welcome, escapedUsername)
+        profile_welcome.text = HtmlCompat.fromHtml(
+            profileWelcomeText,
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
+
         profile_logout.setOnClickListener {
             context?.let {
                 AuthUI.getInstance().signOut(it).addOnCompleteListener {
@@ -41,6 +108,23 @@ class ProfileLoggedIn : Fragment() {
                 }
             }
         }
+
+        userBirdList.apply {
+            setHasFixedSize(true)
+
+            layoutManager = GridLayoutManager(context, 2)
+            adapter = firestoreAdapter
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        firestoreAdapter.stopListening()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        firestoreAdapter.startListening()
     }
 
     private fun loadFragment(fragment: Fragment) {
@@ -68,4 +152,9 @@ class ProfileLoggedIn : Fragment() {
                 }
             }
     }
+}
+
+private class BirdsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    val birdName: TextView = itemView.findViewById(R.id.birdNameInProfile)
+    val birdImage: ImageView = itemView.findViewById(R.id.birdPhotoInProfile)
 }

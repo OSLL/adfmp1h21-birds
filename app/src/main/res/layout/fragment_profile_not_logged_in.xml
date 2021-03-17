@@ -3,13 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".profile.ProfileNotLoggedIn"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingStart="@dimen/medium"
+    android:paddingTop="@dimen/medium"
+    android:paddingEnd="@dimen/medium"
+    tools:context=".profile.ProfileNotLoggedIn">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/profile_not_logged_text" />
+        android:text="@string/profile_not_logged_text"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/button_log_in"

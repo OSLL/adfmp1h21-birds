@@ -18,6 +18,11 @@ import ru.itmo.chori.birdsexplorer.RequestCode
 
 
 class ProfileNotLoggedIn : Fragment() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        loadLoggedInUserFragment()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
