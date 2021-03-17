@@ -16,6 +16,8 @@
     <string name="no_birds">You did not add any bird yet! 🐣</string>
 
     // Bird page
+    <string name="bird_page_edit">Edit</string>
+    <string name="bird_page_remove">Remove</string>
     <string name="bird_page_seen_at_title">Seen at:</string>
 
     <string name="bird_photo_description">A picture of %s</string>

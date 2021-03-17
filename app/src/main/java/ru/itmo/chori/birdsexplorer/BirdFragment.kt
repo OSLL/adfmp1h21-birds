@@ -1,17 +1,20 @@
 package ru.itmo.chori.birdsexplorer
 
 import android.os.Bundle
+import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import com.bumptech.glide.Glide
+import com.firebase.geofire.GeoFireUtils
+import com.firebase.geofire.GeoLocation
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
@@ -25,13 +28,18 @@ class BirdFragment : Fragment(), OnMapReadyCallback {
     private lateinit var oldTitle: CharSequence
     private lateinit var storage: StorageReference
 
+    private lateinit var firestore: FirebaseFirestore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             bird = it.getParcelable(ARG_BIRD)!!
         }
 
+        setHasOptionsMenu(true)
+
         storage = Firebase.storage.reference
+        firestore = FirebaseFirestore.getInstance()
     }
 
     override fun onCreateView(
@@ -47,6 +55,36 @@ class BirdFragment : Fragment(), OnMapReadyCallback {
         // TODO: If user id == author id => show edit and delete icons
 
         return view
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+
+        val user = Firebase.auth.currentUser // Do read
+        user?.let {
+            if (user.uid == bird.author) {
+                inflater.inflate(R.menu.action_bar_bird_menu, menu)
+            }
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_edit_bird -> {
+            // TODO: Implement after create bird page
+            true
+        }
+        R.id.action_remove_bird -> {
+            firestore.collection("birds").document(bird.id).delete()
+                .addOnSuccessListener {
+                    // TODO: Report successful removal
+                }.addOnFailureListener {
+                    // TODO: Report error. Might be unauthorized attempt
+                }
+
+            requireFragmentManager().popBackStack()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

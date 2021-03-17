@@ -5,9 +5,11 @@ import android.os.Parcelable
 import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable
 import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.GeoPoint
 
 data class BirdModel(
+    @DocumentId val id: String = "",
     val name: String = "",
     val image: String = "",
     val seen_at: Timestamp = Timestamp.now(),
@@ -16,6 +18,7 @@ data class BirdModel(
     val author: String = ""
 ) : AbstractSafeParcelable() {
     constructor(parcel: Parcel) : this(
+        id = parcel.readString()!!,
         name = parcel.readString()!!,
         image = parcel.readString()!!,
         seen_at = parcel.readParcelable(Timestamp::class.java.classLoader)!!,
@@ -25,14 +28,15 @@ data class BirdModel(
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        val id = SafeParcelWriter.beginObjectHeader(parcel)
+        val handler = SafeParcelWriter.beginObjectHeader(parcel)
+        parcel.writeString(id)
         parcel.writeString(name)
         parcel.writeString(image)
         parcel.writeParcelable(seen_at, flags)
         parcel.writeParcelable(location)
         parcel.writeString(geohash)
         parcel.writeString(author)
-        SafeParcelWriter.finishObjectHeader(parcel, id)
+        SafeParcelWriter.finishObjectHeader(parcel, handler)
     }
 
     companion object CREATOR : Parcelable.Creator<BirdModel> {

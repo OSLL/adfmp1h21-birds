@@ -19,6 +19,8 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.fragment_profile_logged_in.*
+import ru.itmo.chori.birdsexplorer.BirdFragment
+import ru.itmo.chori.birdsexplorer.FragmentTags
 import ru.itmo.chori.birdsexplorer.R
 import ru.itmo.chori.birdsexplorer.data.BirdModel
 
@@ -65,12 +67,29 @@ class ProfileLoggedIn : Fragment() {
                 Glide.with(requireActivity())
                     .load(storage.child(model.image))
                     .into(holder.birdImage)
+
+                holder.itemView.setOnClickListener {
+                    loadFragmentOnStack(BirdFragment.newInstance(model))
+                }
             }
 
             override fun onDataChanged() {
                 super.onDataChanged()
 
                 hideListIfNoData(itemCount)
+            }
+        }
+    }
+
+    private fun loadFragmentOnStack(fragment: Fragment) {
+        fragmentManager?.let {
+            with(it.beginTransaction()) {
+                val tag = FragmentTags.GALLERY.toString()
+
+                replace(R.id.app_content, fragment, tag)
+                addToBackStack(tag)
+
+                commit()
             }
         }
     }
@@ -119,14 +138,6 @@ class ProfileLoggedIn : Fragment() {
             profileWelcomeText,
             HtmlCompat.FROM_HTML_MODE_LEGACY
         )
-
-        profile_logout.setOnClickListener {
-            context?.let {
-                AuthUI.getInstance().signOut(it).addOnCompleteListener {
-                    loadFragment(ProfileNotLoggedIn.newInstance())
-                }
-            }
-        }
 
         userBirdList.apply {
             setHasFixedSize(true)
