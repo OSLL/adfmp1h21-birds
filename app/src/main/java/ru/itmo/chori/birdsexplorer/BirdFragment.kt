@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.FragmentManager
 import com.bumptech.glide.Glide
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -93,12 +92,14 @@ class BirdFragment : Fragment(), OnMapReadyCallback {
                     putParcelable(ARG_BIRD, bird)
                 }
             }
+
+        private const val DEFAULT_ZOOM = 14.0f
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         val location = LatLng(bird.location.latitude, bird.location.longitude)
 
         googleMap.addMarker(MarkerOptions().position(location))
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 14.0f))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM))
     }
 }

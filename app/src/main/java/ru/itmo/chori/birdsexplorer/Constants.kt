@@ -7,5 +7,6 @@ enum class RequestCode {
 }
 
 enum class FragmentTags {
-    GALLERY
+    GALLERY,
+    MAP
 }

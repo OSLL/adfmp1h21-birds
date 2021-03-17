@@ -3,6 +3,7 @@ package ru.itmo.chori.birdsexplorer.data
 import android.os.Parcel
 import android.os.Parcelable
 import com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable
+import com.google.android.gms.common.internal.safeparcel.SafeParcelWriter
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.GeoPoint
 
@@ -10,20 +11,25 @@ data class BirdModel(
     val name: String = "",
     val image: String = "",
     val seen_at: Timestamp = Timestamp.now(),
-    val location: GeoPoint = GeoPoint(0.0, 0.0)
+    val location: GeoPoint = GeoPoint(0.0, 0.0),
+    val geohash: String = ""
 ) : AbstractSafeParcelable() {
     constructor(parcel: Parcel) : this(
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readParcelable(Timestamp::class.java.classLoader)!!,
-        GeoPoint(parcel.readDouble(), parcel.readDouble())
+        name = parcel.readString()!!,
+        image = parcel.readString()!!,
+        seen_at = parcel.readParcelable(Timestamp::class.java.classLoader)!!,
+        location = GeoPoint(parcel.readDouble(), parcel.readDouble()),
+        geohash = parcel.readString()!!
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        val id = SafeParcelWriter.beginObjectHeader(parcel)
         parcel.writeString(name)
         parcel.writeString(image)
         parcel.writeParcelable(seen_at, flags)
-        parcel.writeParcelable(location, flags)
+        parcel.writeParcelable(location)
+        parcel.writeString(geohash)
+        SafeParcelWriter.finishObjectHeader(parcel, id)
     }
 
     companion object CREATOR : Parcelable.Creator<BirdModel> {
@@ -37,7 +43,7 @@ data class BirdModel(
     }
 }
 
-private fun Parcel.writeParcelable(geoPoint: GeoPoint, flags: Int) {
+private fun Parcel.writeParcelable(geoPoint: GeoPoint) {
     writeDouble(geoPoint.latitude)
     writeDouble(geoPoint.longitude)
 }
