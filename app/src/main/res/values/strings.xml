@@ -20,5 +20,8 @@
     <string name="bird_page_remove">Remove</string>
     <string name="bird_page_seen_at_title">Seen at:</string>
 
+    // Gallery
+    <string name="gallery_card_bird_location">Location: %fº N, %fº E</string>
+
     <string name="bird_photo_description">A picture of %s</string>
 </resources>

@@ -4,7 +4,7 @@
     <dimen name="medium">16dp</dimen>
     <dimen name="big">48dp</dimen>
 
-    <dimen name="gallery_card_height">270dp</dimen>
+    <dimen name="gallery_card_height">250dp</dimen>
     <dimen name="profile_card_height">150dp</dimen>
 
     <dimen name="bird_page_photo_height">300dp</dimen>

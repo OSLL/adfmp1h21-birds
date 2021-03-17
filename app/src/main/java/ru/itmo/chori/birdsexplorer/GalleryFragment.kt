@@ -2,31 +2,34 @@ package ru.itmo.chori.birdsexplorer
 
 import android.location.Geocoder
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.fragment_gallery.*
 import ru.itmo.chori.birdsexplorer.data.BirdModel
 import java.text.DateFormat
-import java.util.*
+import java.util.concurrent.Executors
 
 class GalleryFragment : Fragment() {
     private lateinit var firestoreAdapter: FirestoreRecyclerAdapter<BirdModel, BirdsViewHolder>
     private lateinit var firestore: FirebaseFirestore
     private lateinit var geocoder: Geocoder
     private lateinit var storage: StorageReference
+
+    private val executor = Executors.newSingleThreadExecutor()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,15 +62,16 @@ class GalleryFragment : Fragment() {
                 holder.birdName.text = model.name
                 holder.birdSeenTime.text = dateFormatter.format(model.seen_at.toDate())
 
-                // TODO: Possible too long waiting time
-                // TODO: Should check Geocoder.isPresent()
-                val addresses = geocoder.getFromLocation(
+                holder.birdLocation.text = getString(
+                    R.string.gallery_card_bird_location,
                     model.location.latitude,
-                    model.location.longitude,
-                    1
+                    model.location.longitude
                 )
-                if (addresses != null && addresses.isNotEmpty()) {
-                    holder.birdLocation.text = addresses[0].getAddressLine(0)
+                executor.submit {
+                    val text = humanReadableLocation(model.location)
+                    requireActivity().runOnUiThread {
+                        holder.birdLocation.text = text
+                    }
                 }
 
                 Glide.with(requireActivity())
@@ -83,6 +87,22 @@ class GalleryFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun humanReadableLocation(location: GeoPoint): String? {
+        // TODO: Possible too long waiting time
+        // TODO: Should check Geocoder.isPresent()
+        val addresses = geocoder.getFromLocation(
+            location.latitude,
+            location.longitude,
+            1
+        )
+
+        if (addresses != null && addresses.isNotEmpty()) {
+            return addresses[0].getAddressLine(0)
+        }
+
+        return null
     }
 
     override fun onCreateView(
