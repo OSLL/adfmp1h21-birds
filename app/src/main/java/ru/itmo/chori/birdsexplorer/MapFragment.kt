@@ -24,8 +24,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import ru.itmo.chori.birdsexplorer.data.BirdModel
 
-class MapFragment : Fragment(), OnMapReadyCallback, OnCameraIdleListener, GoogleMap.OnInfoWindowClickListener,
-    OnRequestPermissionsResultCallback {
+class MapFragment : Fragment(), OnMapReadyCallback, OnCameraIdleListener,
+    GoogleMap.OnInfoWindowClickListener, OnRequestPermissionsResultCallback {
     private lateinit var googleMap: GoogleMap
     private lateinit var firestore: FirebaseFirestore
 

@@ -45,11 +45,9 @@ class BirdFragment : Fragment(), OnMapReadyCallback {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_bird, container, false)
-        activity?.let {
-            oldTitle = it.title
+        requireActivity().apply {
+            oldTitle = title
         }
-
-        // TODO: If user id == author id => show edit and delete icons
 
         return view
     }
@@ -100,15 +98,15 @@ class BirdFragment : Fragment(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
-        activity?.let {
-            it.title = bird.name
+        requireActivity().apply {
+            title = bird.name
         }
     }
 
     override fun onStop() {
         super.onStop()
-        activity?.let {
-            it.title = oldTitle
+        requireActivity().apply {
+            title = oldTitle
         }
     }
 

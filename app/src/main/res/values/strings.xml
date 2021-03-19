@@ -23,5 +23,23 @@
     // Gallery
     <string name="gallery_card_bird_location">Location: %fº N, %fº E</string>
 
+    // Add bird
+    <string name="label_name">Bird name</string>
+    <string name="label_click_to_add_bird">Click on the camera icon to add bird photo:</string>
+    <string name="label_click_to_select_location">Click here to select location where bird was seen:</string>
+    <string name="label_button_select_location">Open map</string>
+    <string name="label_button_save">Save</string>
+    <string name="label_button_cancel">Cancel</string>
+    <string name="label_click_to_select_location_detail"> It will open a map in separate window</string>
+    <string name="add_bird_location_undefined">Location: undefined</string>
+    <string name="add_bird_location_not_geo_encoded">Location: %fº N, %fº E</string>
+
+    // Validation
+    <string name="error_empty_coordinates">Please, specify location of the bird</string>
+    <string name="error_empty_photo">Please, upload a photo or image of the bird</string>
+
+    // Location picker
+    <string name="pin_description">Pin, which helps to more precisely see selected location on map</string>
+
     <string name="bird_photo_description">A picture of %s</string>
 </resources>

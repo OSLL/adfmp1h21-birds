@@ -8,28 +8,29 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.fragment_gallery.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.itmo.chori.birdsexplorer.data.BirdModel
+import ru.itmo.chori.birdsexplorer.utils.humanReadableLocation
 import java.text.DateFormat
-import java.util.concurrent.Executors
 
 class GalleryFragment : Fragment() {
     private lateinit var firestoreAdapter: FirestoreRecyclerAdapter<BirdModel, BirdsViewHolder>
     private lateinit var firestore: FirebaseFirestore
     private lateinit var geocoder: Geocoder
     private lateinit var storage: StorageReference
-
-    private val executor = Executors.newSingleThreadExecutor()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,10 +68,11 @@ class GalleryFragment : Fragment() {
                     model.location.latitude,
                     model.location.longitude
                 )
-                executor.submit {
-                    val text = humanReadableLocation(model.location)
-                    requireActivity().runOnUiThread {
-                        holder.birdLocation.text = text
+                lifecycleScope.launch(context = Dispatchers.IO) {
+                    humanReadableLocation(geocoder, model.location)?.let { text ->
+                        withContext(Dispatchers.Main) {
+                            holder.birdLocation.text = text
+                        }
                     }
                 }
 
@@ -87,22 +89,6 @@ class GalleryFragment : Fragment() {
                 }
             }
         }
-    }
-
-    private fun humanReadableLocation(location: GeoPoint): String? {
-        // TODO: Possible too long waiting time
-        // TODO: Should check Geocoder.isPresent()
-        val addresses = geocoder.getFromLocation(
-            location.latitude,
-            location.longitude,
-            1
-        )
-
-        if (addresses != null && addresses.isNotEmpty()) {
-            return addresses[0].getAddressLine(0)
-        }
-
-        return null
     }
 
     override fun onCreateView(

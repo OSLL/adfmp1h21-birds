@@ -32,9 +32,15 @@
             android:background="?attr/colorPrimary"
             android:orientation="vertical"
             android:paddingStart="@dimen/medium"
-            android:paddingTop="@dimen/small"
+            android:paddingTop="@dimen/tiny"
             android:paddingEnd="@dimen/medium"
-            android:paddingBottom="@dimen/small">
+            android:paddingBottom="@dimen/tiny"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/birdPhoto"
+            app:layout_constraintVertical_weight="2">
 
             <TextView
                 android:id="@+id/birdName"
