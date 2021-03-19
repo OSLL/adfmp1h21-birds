@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,15 +11,21 @@
     tools:context=".profile.ProfileNotLoggedIn">
 
     <TextView
+        android:id="@+id/profileNotLoggedInWelcomeMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/profile_not_logged_text"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button_log_in"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/login" />
+        android:text="@string/login"
+        app:layout_constraintTop_toBottomOf="@+id/profileNotLoggedInWelcomeMessage"
+        tools:layout_editor_absoluteX="16dp" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

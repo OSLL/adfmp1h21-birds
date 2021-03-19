@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".BirdFragment">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -17,8 +17,10 @@
             android:id="@+id/birdPagePhoto"
             android:layout_width="match_parent"
             android:layout_height="@dimen/bird_page_photo_height"
-            android:layout_marginBottom="@dimen/medium"
             android:contentDescription="@string/bird_photo_description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:src="@tools:sample/backgrounds/scenic" />
 
         <TextView
@@ -27,13 +29,19 @@
             android:layout_height="wrap_content"
             android:text="@string/bird_page_seen_at_title"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/birdPagePhoto" />
 
         <fragment
             android:id="@+id/mapView"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/bird_page_map_height" />
-    </LinearLayout>
+            android:layout_height="@dimen/bird_page_map_height"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>
