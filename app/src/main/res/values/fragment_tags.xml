@@ -2,6 +2,7 @@
 <resources>
     <string translatable="false" name="fragment_tag_gallery">GALLERY</string>
     <string translatable="false" name="fragment_tag_map">MAP</string>
+    <string translatable="false" name="fragment_tag_map_near_bird">MAP_NEAR_BIRD</string>
     <string translatable="false" name="fragment_tag_map_pick_location">MAP_PICK_LOCATION</string>
     <string translatable="false" name="fragment_tag_map_pick_location_dialog">MAP_PICK_LOCATION_DIALOG</string>
 </resources>

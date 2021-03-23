@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.coroutineScope
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener
 import com.google.android.gms.maps.SupportMapFragment
@@ -21,12 +22,18 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ktx.toObject
 import com.google.maps.android.ktx.awaitMap
 import ru.itmo.chori.birdsexplorer.data.BirdModel
+import ru.itmo.chori.birdsexplorer.utils.ParcelableGeoPoint
 import ru.itmo.chori.birdsexplorer.utils.loadFragmentOnStack
 
+private const val ARG_LOCATION = "location"
+
 class MapFragment : Fragment(), OnCameraIdleListener, GoogleMap.OnInfoWindowClickListener {
+    private var location: GeoPoint? = null
+
     private lateinit var googleMap: GoogleMap
     private lateinit var firestore: FirebaseFirestore
 
@@ -44,6 +51,9 @@ class MapFragment : Fragment(), OnCameraIdleListener, GoogleMap.OnInfoWindowClic
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        arguments?.let {
+            location = it.getParcelable<ParcelableGeoPoint>(ARG_LOCATION)?.unwrap()
+        }
 
         firestore = FirebaseFirestore.getInstance()
     }
@@ -59,6 +69,15 @@ class MapFragment : Fragment(), OnCameraIdleListener, GoogleMap.OnInfoWindowClic
         lifecycle.coroutineScope.launchWhenCreated {
             googleMap = mapFragment.awaitMap()
 
+            location?.let {
+                googleMap.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        LatLng(it.latitude, it.longitude),
+                        DEFAULT_ZOOM
+                    )
+                )
+            }
+
             googleMap.setOnCameraIdleListener(this@MapFragment)
             googleMap.setOnInfoWindowClickListener(this@MapFragment)
 
@@ -70,8 +89,19 @@ class MapFragment : Fragment(), OnCameraIdleListener, GoogleMap.OnInfoWindowClic
     }
 
     companion object {
+        const val DEFAULT_ZOOM = 14.0f
+
         @JvmStatic
-        fun newInstance() = MapFragment()
+        fun newInstance(location: GeoPoint? = null) = MapFragment().apply {
+            arguments = Bundle().apply {
+                location?.let {
+                    putParcelable(
+                        ARG_LOCATION,
+                        ParcelableGeoPoint(location.latitude, location.longitude)
+                    )
+                }
+            }
+        }
     }
 
     private fun enableLocation() {

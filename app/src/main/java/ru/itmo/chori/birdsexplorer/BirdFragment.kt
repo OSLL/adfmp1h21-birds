@@ -11,6 +11,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
@@ -104,6 +105,16 @@ class BirdFragment : Fragment() {
 
             googleMap.addMarker(MarkerOptions().position(location))
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM))
+
+            googleMap.setOnMarkerClickListener {
+                loadFragmentOnStack(
+                    parentFragmentManager,
+                    MapFragment.newInstance(GeoPoint(it.position.latitude, it.position.longitude)),
+                    getString(R.string.fragment_tag_map_near_bird)
+                )
+
+                true
+            }
         }
     }
 
