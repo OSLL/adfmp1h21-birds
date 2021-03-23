@@ -64,7 +64,7 @@ class ProfileLoggedIn : Fragment() {
             ) {
                 holder.birdName.text = model.name
                 Glide.with(requireActivity())
-                    .load(storage.child(model.image))
+                    .load(storage.child(model.image!!))
                     .into(holder.birdImage)
 
                 holder.itemView.setOnClickListener {

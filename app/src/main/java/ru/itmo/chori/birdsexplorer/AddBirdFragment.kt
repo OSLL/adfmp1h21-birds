@@ -1,21 +1,27 @@
 package ru.itmo.chori.birdsexplorer
 
 import android.location.Geocoder
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DecodeFormat
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
+import com.firebase.geofire.GeoFireUtils
+import com.firebase.geofire.GeoLocation
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.vansuita.pickimage.bundle.PickSetup
 import com.vansuita.pickimage.dialog.PickImageDialog
 import kotlinx.android.synthetic.main.fragment_add_bird.*
@@ -26,18 +32,41 @@ import kotlinx.coroutines.withContext
 import ru.itmo.chori.birdsexplorer.data.BirdModel
 import ru.itmo.chori.birdsexplorer.data.BirdViewModel
 import ru.itmo.chori.birdsexplorer.data.BirdViewModelFactory
+import ru.itmo.chori.birdsexplorer.profile.ProfileNotLoggedIn
 import ru.itmo.chori.birdsexplorer.utils.humanReadableLocation
 
 class AddBirdFragment(bird: BirdModel? = null) : Fragment() {
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var firebaseStorage: StorageReference
+    private lateinit var firestore: FirebaseFirestore
+
     private lateinit var geocoder: Geocoder
     private lateinit var oldTitle: CharSequence
 
     private lateinit var pickImageDialog: PickImageDialog
 
+    private lateinit var navigationBar: BottomNavigationView
+    private lateinit var progressBar: ProgressBar
+
     private val birdViewModel: BirdViewModel by viewModels { BirdViewModelFactory(bird) }
+
+    private fun loadProfileFragment() {
+        loadFragment(ProfileNotLoggedIn.newInstance())
+        navigationBar.selectedItemId = R.id.action_profile
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val activity = requireActivity()
+        navigationBar = activity.findViewById(R.id.bottom_navigation)
+
+        firebaseAuth = FirebaseAuth.getInstance()
+        // Note: token may expire at any time when authentication is required
+        if (firebaseAuth.currentUser == null) {
+            loadProfileFragment()
+            return
+        }
 
         pickImageDialog = PickImageDialog.build(PickSetup())
             .setOnPickResult { result ->
@@ -79,6 +108,11 @@ class AddBirdFragment(bird: BirdModel? = null) : Fragment() {
                 }
             }
         }
+
+        progressBar = activity.findViewById(R.id.progressBar)
+
+        firebaseStorage = FirebaseStorage.getInstance().reference
+        firestore = FirebaseFirestore.getInstance()
     }
 
     private fun showLocationFieldError(show: Boolean) {
@@ -191,12 +225,60 @@ class AddBirdFragment(bird: BirdModel? = null) : Fragment() {
 
             birdCurrentLocationText.text = null
             showLocationFieldError(false)
+
+            progressBar.visibility = View.INVISIBLE
         }
 
         buttonSaveBird.setOnClickListener {
             if (!validate()) {
                 return@setOnClickListener
             }
+
+            progressBar.visibility = View.VISIBLE
+
+            val file = Uri.fromFile(File(birdViewModel.image.value!!))
+            val fileReference = firebaseStorage.child("birds/${file.lastPathSegment}")
+
+            val user = firebaseAuth.currentUser
+            if (user == null) {
+                loadProfileFragment()
+                return@setOnClickListener
+            }
+
+            fileReference.putFile(file)
+                .addOnFailureListener {
+                    // TODO: Handle failure: e.g. rejection due to unauthenticated
+                }.addOnSuccessListener {
+                    val geoLocation = GeoLocation(
+                        birdViewModel.location.value!!.latitude,
+                        birdViewModel.location.value!!.longitude
+                    )
+
+                    val newBird = BirdModel(
+                        author = user.uid,
+                        name = birdViewModel.name.value,
+                        image = fileReference.path,
+                        location = birdViewModel.location.value,
+                        geohash = GeoFireUtils.getGeoHashForLocation(geoLocation)
+                    )
+
+                    firestore.collection("birds")
+                        .add(newBird)
+                        .addOnSuccessListener {
+                            loadFragment(GalleryFragment.newInstance())
+                        }.addOnFailureListener {
+                            // TODO: Handle failure
+                        }.addOnCompleteListener {
+                            progressBar.visibility = View.INVISIBLE
+                        }
+                }
+        }
+    }
+
+    private fun loadFragment(fragment: Fragment) {
+        with(parentFragmentManager.beginTransaction()) {
+            replace(R.id.app_content, fragment)
+            commit()
         }
     }
 

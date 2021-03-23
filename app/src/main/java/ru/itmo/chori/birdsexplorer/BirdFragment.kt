@@ -69,7 +69,7 @@ class BirdFragment : Fragment(), OnMapReadyCallback {
             true
         }
         R.id.action_remove_bird -> {
-            firestore.collection("birds").document(bird.id).delete()
+            firestore.collection("birds").document(bird.id!!).delete()
                 .addOnSuccessListener {
                     // TODO: Report successful removal
                 }.addOnFailureListener {
@@ -85,7 +85,7 @@ class BirdFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Glide.with(requireActivity())
-            .load(storage.child(bird.image))
+            .load(storage.child(bird.image!!))
             .placeholder(R.drawable.placeholder_image)
             .into(birdPagePhoto)
         birdPagePhoto.contentDescription = getString(
@@ -130,7 +130,7 @@ class BirdFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        val location = LatLng(bird.location.latitude, bird.location.longitude)
+        val location = LatLng(bird.location!!.latitude, bird.location!!.longitude)
 
         googleMap.addMarker(MarkerOptions().position(location))
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM))

@@ -137,7 +137,7 @@ class MapFragment : Fragment(), OnCameraIdleListener, GoogleMap.OnInfoWindowClic
                 }.mapNotNull {
                     it.toObject<BirdModel>()
                 }.map { bird ->
-                    val location = LatLng(bird.location.latitude, bird.location.longitude)
+                    val location = LatLng(bird.location!!.latitude, bird.location.longitude)
                     googleMap.addMarker(
                         MarkerOptions()
                             .position(location)

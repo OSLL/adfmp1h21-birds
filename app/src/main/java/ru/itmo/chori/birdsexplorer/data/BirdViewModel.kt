@@ -22,12 +22,6 @@ class BirdViewModel(bird: BirdModel? = null) : ViewModel() {
             location = MutableLiveData(null)
         }
     }
-
-    fun toBirdModel(): BirdModel = BirdModel(
-        name = name.value?.trim() ?: "",
-        image = image.value ?: "",
-        location = location.value ?: GeoPoint(0.0, 0.0)
-    )
 }
 
 class BirdViewModelFactory(private val bird: BirdModel? = null) : ViewModelProvider.Factory {

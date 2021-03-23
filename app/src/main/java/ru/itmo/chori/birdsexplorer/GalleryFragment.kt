@@ -61,11 +61,11 @@ class GalleryFragment : Fragment() {
                 model: BirdModel
             ) {
                 holder.birdName.text = model.name
-                holder.birdSeenTime.text = dateFormatter.format(model.seen_at.toDate())
+                holder.birdSeenTime.text = dateFormatter.format(model.seen_at!!.toDate())
 
                 holder.birdLocation.text = getString(
                     R.string.gallery_card_bird_location,
-                    model.location.latitude,
+                    model.location!!.latitude,
                     model.location.longitude
                 )
                 lifecycleScope.launch(context = Dispatchers.IO) {
@@ -77,7 +77,7 @@ class GalleryFragment : Fragment() {
                 }
 
                 Glide.with(requireActivity())
-                    .load(storage.child(model.image))
+                    .load(storage.child(model.image!!))
                     .placeholder(R.drawable.placeholder_image)
                     .into(holder.birdImage)
                 holder.birdImage.contentDescription = getString(

@@ -20,10 +20,12 @@ class MainActivity : AppCompatActivity() {
 
         with(bottom_navigation) {
             setOnNavigationItemSelectedListener {
-                supportFragmentManager.popBackStackImmediate(
-                    null,
-                    FragmentManager.POP_BACK_STACK_INCLUSIVE
-                )
+                if (supportFragmentManager.backStackEntryCount > 0) {
+                    supportFragmentManager.popBackStackImmediate(
+                        null,
+                        FragmentManager.POP_BACK_STACK_INCLUSIVE
+                    )
+                }
 
                 when (it.itemId) {
                     R.id.action_gallery -> {

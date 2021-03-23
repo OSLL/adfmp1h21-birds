@@ -9,22 +9,22 @@ import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.GeoPoint
 
 data class BirdModel(
-    @DocumentId val id: String = "",
-    val name: String = "",
-    val image: String = "",
-    val seen_at: Timestamp = Timestamp.now(),
-    val location: GeoPoint = GeoPoint(0.0, 0.0),
-    val geohash: String = "",
-    val author: String = ""
+    @DocumentId val id: String? = null,
+    val name: String? = null,
+    val image: String? = null,
+    val seen_at: Timestamp? = Timestamp.now(),
+    val location: GeoPoint? = null,
+    val geohash: String? = null,
+    val author: String? = null
 ) : AbstractSafeParcelable() {
     constructor(parcel: Parcel) : this(
-        id = parcel.readString()!!,
-        name = parcel.readString()!!,
-        image = parcel.readString()!!,
-        seen_at = parcel.readParcelable(Timestamp::class.java.classLoader)!!,
+        id = parcel.readString(),
+        name = parcel.readString(),
+        image = parcel.readString(),
+        seen_at = parcel.readParcelable(Timestamp::class.java.classLoader),
         location = GeoPoint(parcel.readDouble(), parcel.readDouble()),
-        geohash = parcel.readString()!!,
-        author = parcel.readString()!!
+        geohash = parcel.readString(),
+        author = parcel.readString()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -50,7 +50,7 @@ data class BirdModel(
     }
 }
 
-private fun Parcel.writeParcelable(geoPoint: GeoPoint) {
-    writeDouble(geoPoint.latitude)
-    writeDouble(geoPoint.longitude)
+private fun Parcel.writeParcelable(geoPoint: GeoPoint?) {
+    writeDouble(geoPoint?.latitude ?: 0.0)
+    writeDouble(geoPoint?.longitude ?: 0.0)
 }
