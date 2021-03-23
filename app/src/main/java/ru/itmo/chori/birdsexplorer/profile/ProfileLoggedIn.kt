@@ -20,7 +20,6 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.fragment_profile_logged_in.*
 import ru.itmo.chori.birdsexplorer.BirdFragment
-import ru.itmo.chori.birdsexplorer.FragmentTags
 import ru.itmo.chori.birdsexplorer.R
 import ru.itmo.chori.birdsexplorer.data.BirdModel
 
@@ -82,15 +81,11 @@ class ProfileLoggedIn : Fragment() {
     }
 
     private fun loadFragmentOnStack(fragment: Fragment) {
-        fragmentManager?.let {
-            with(it.beginTransaction()) {
-                val tag = FragmentTags.GALLERY.toString()
+        with(parentFragmentManager.beginTransaction()) {
+            replace(R.id.app_content, fragment, getString(R.string.fragment_tag_gallery))
+            addToBackStack(tag)
 
-                replace(R.id.app_content, fragment, tag)
-                addToBackStack(tag)
-
-                commit()
-            }
+            commit()
         }
     }
 
@@ -99,7 +94,7 @@ class ProfileLoggedIn : Fragment() {
         inflater.inflate(R.menu.action_bar_profile_menu, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when(item.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.action_logout -> {
             AuthUI.getInstance().signOut(requireContext()).addOnCompleteListener {
                 loadFragment(ProfileNotLoggedIn.newInstance())
@@ -158,11 +153,9 @@ class ProfileLoggedIn : Fragment() {
     }
 
     private fun loadFragment(fragment: Fragment) {
-        fragmentManager?.let {
-            with(it.beginTransaction()) {
-                replace(R.id.app_content, fragment)
-                commit()
-            }
+        with(parentFragmentManager.beginTransaction()) {
+            replace(R.id.app_content, fragment)
+            commit()
         }
     }
 

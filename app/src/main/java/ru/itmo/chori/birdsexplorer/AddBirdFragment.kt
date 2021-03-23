@@ -1,36 +1,46 @@
 package ru.itmo.chori.birdsexplorer
 
-import pl.aprilapps.easyphotopicker.MediaFile
-import pl.aprilapps.easyphotopicker.MediaSource
-
-import android.content.Intent
 import android.location.Geocoder
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.GeoPoint
+import com.vansuita.pickimage.bundle.PickSetup
+import com.vansuita.pickimage.dialog.PickImageDialog
 import kotlinx.android.synthetic.main.fragment_add_bird.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import pl.aprilapps.easyphotopicker.DefaultCallback
-import pl.aprilapps.easyphotopicker.EasyImage
+import ru.itmo.chori.birdsexplorer.data.BirdModel
+import ru.itmo.chori.birdsexplorer.data.BirdViewModel
+import ru.itmo.chori.birdsexplorer.data.BirdViewModelFactory
 import ru.itmo.chori.birdsexplorer.utils.humanReadableLocation
 
-class AddBirdFragment : Fragment() {
+class AddBirdFragment(bird: BirdModel? = null) : Fragment() {
     private lateinit var geocoder: Geocoder
     private lateinit var oldTitle: CharSequence
-    private lateinit var easyImage: EasyImage
+
+    private lateinit var pickImageDialog: PickImageDialog
+
+    private val birdViewModel: BirdViewModel by viewModels { BirdViewModelFactory(bird) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        easyImage = EasyImage.Builder(requireContext()).build()
+        pickImageDialog = PickImageDialog.build(PickSetup())
+            .setOnPickResult { result ->
+                Glide.with(requireContext())
+                    .load(result.uri)
+                    .into(imageAddBird)
+            }.setOnPickCancel {
+                // TODO: Handle refuse
+            }
+
         geocoder = Geocoder(context)
     }
 
@@ -51,7 +61,7 @@ class AddBirdFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         imageAddBird.setOnClickListener {
-            easyImage.openChooser(this)
+            pickImageDialog.show(childFragmentManager)
         }
 
         buttonSelectLocation.setOnClickListener {
@@ -75,40 +85,11 @@ class AddBirdFragment : Fragment() {
                 }
             }
 
-            dialog.show(requireFragmentManager(), "")
+            dialog.show(
+                childFragmentManager,
+                getString(R.string.fragment_tag_map_pick_location_dialog)
+            )
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        easyImage.handleActivityResult(
-            requestCode,
-            resultCode,
-            data,
-            requireActivity(),
-            object : DefaultCallback() {
-                override fun onMediaFilesPicked(imageFiles: Array<MediaFile>, source: MediaSource) {
-                    if (imageFiles.isEmpty()) {
-                        return
-                    }
-
-                    val image = imageFiles[0]
-                    Glide.with(requireContext())
-                        .load(image.file)
-                        .into(imageAddBird)
-                }
-
-                override fun onCanceled(source: MediaSource) {
-                    super.onCanceled(source)
-                    // TODO: Handle cancel
-                }
-
-                override fun onImagePickerError(error: Throwable, source: MediaSource) {
-                    super.onImagePickerError(error, source)
-                    // TODO: Handle error
-                }
-            })
     }
 
     override fun onResume() {
@@ -129,6 +110,6 @@ class AddBirdFragment : Fragment() {
         private const val TITLE = "Add bird"
 
         @JvmStatic
-        fun newInstance() = AddBirdFragment()
+        fun newInstance(bird: BirdModel? = null) = AddBirdFragment(bird)
     }
 }

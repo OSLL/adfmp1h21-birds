@@ -76,7 +76,7 @@ class BirdFragment : Fragment(), OnMapReadyCallback {
                     // TODO: Report error. Might be unauthorized attempt
                 }
 
-            requireFragmentManager().popBackStack()
+            childFragmentManager.popBackStack()
             true
         }
         else -> super.onOptionsItemSelected(item)

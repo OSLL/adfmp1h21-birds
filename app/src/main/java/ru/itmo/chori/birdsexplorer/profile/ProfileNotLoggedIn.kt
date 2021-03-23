@@ -1,22 +1,33 @@
 package ru.itmo.chori.birdsexplorer.profile
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_profile_not_logged_in.*
 import ru.itmo.chori.birdsexplorer.R
-import ru.itmo.chori.birdsexplorer.RequestCode
 
 
 class ProfileNotLoggedIn : Fragment() {
+    private val requestAuth = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        // FIXME: Handle error
+//        val response = IdpResponse.fromResultIntent(it.data)
+
+        if (it.resultCode == Activity.RESULT_OK) {
+            loadLoggedInUserFragment()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadLoggedInUserFragment()
@@ -40,31 +51,17 @@ class ProfileNotLoggedIn : Fragment() {
                     AuthUI.IdpConfig.GitHubBuilder().build()
                 )
 
-                startActivityForResult(
+                requestAuth.launch(
                     AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
-                        .build(),
-                    RequestCode.SIGN_IN.ordinal
+                        .build()
                 )
 
                 return@setOnClickListener
             }
 
             loadLoggedInUserFragment()
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == RequestCode.SIGN_IN.ordinal) {
-//            FIXME: Handle error
-//            val response = IdpResponse.fromResultIntent(data)
-
-            if (resultCode == Activity.RESULT_OK) {
-                loadLoggedInUserFragment()
-            }
         }
     }
 
@@ -75,11 +72,9 @@ class ProfileNotLoggedIn : Fragment() {
     }
 
     private fun loadFragment(fragment: Fragment) {
-        fragmentManager?.let {
-            with(it.beginTransaction()) {
-                replace(R.id.app_content, fragment)
-                commit()
-            }
+        with(parentFragmentManager.beginTransaction()) {
+            replace(R.id.app_content, fragment)
+            commit()
         }
     }
 

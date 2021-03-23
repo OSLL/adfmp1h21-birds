@@ -7,16 +7,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
 import com.google.android.gms.maps.GoogleMap
-
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
-import kotlinx.android.synthetic.main.fragment_pick_location.*
 
 typealias Callback = ((LatLng) -> Unit)
 
@@ -44,20 +39,9 @@ class PickLocationFragment : DialogFragment() {
         return customView
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        val fragmentManager = requireFragmentManager()
-        fragmentManager.findFragmentById(map_pick_location.id)?.let { mapFragment ->
-            fragmentManager.beginTransaction().apply {
-                remove(mapFragment)
-            }.commit()
-        }
-    }
-
     @SuppressLint("InflateParams") // see https://developer.android.com/guide/topics/ui/dialogs.html#CustomLayout
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        customView = requireActivity().layoutInflater.inflate(
+        customView = layoutInflater.inflate(
             R.layout.fragment_pick_location,
             null
         )
@@ -73,11 +57,13 @@ class PickLocationFragment : DialogFragment() {
         }.create()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        val mapFragment = requireFragmentManager().findFragmentById(
-            R.id.map_pick_location
-        ) as SupportMapFragment?
-        mapFragment?.getMapAsync(callback)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mapFragment.getMapAsync(callback)
     }
+
+    private val mapFragment: SupportMapFragment
+        get() = childFragmentManager.findFragmentByTag(
+            getString(R.string.fragment_tag_map_pick_location)
+        ) as SupportMapFragment
 }

@@ -7,14 +7,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.coroutineScope
 import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -22,12 +22,24 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
+import com.google.maps.android.ktx.awaitMap
 import ru.itmo.chori.birdsexplorer.data.BirdModel
 
-class MapFragment : Fragment(), OnMapReadyCallback, OnCameraIdleListener,
-    GoogleMap.OnInfoWindowClickListener, OnRequestPermissionsResultCallback {
+class MapFragment : Fragment(), OnCameraIdleListener, GoogleMap.OnInfoWindowClickListener {
     private lateinit var googleMap: GoogleMap
     private lateinit var firestore: FirebaseFirestore
+
+    // TODO: It's might be better to always show button and request permission on first click
+    private val requestGeolocationPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // FIXME: Doesn't moves camera to user location right after permission given. See https://issuetracker.google.com/issues/73122459
+            enableLocation()
+        }
+
+        // TODO: Handle reject
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +55,15 @@ class MapFragment : Fragment(), OnMapReadyCallback, OnCameraIdleListener,
         val view = inflater.inflate(R.layout.fragment_map, container, false)
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+        lifecycle.coroutineScope.launchWhenCreated {
+            googleMap = mapFragment.awaitMap()
+
+            googleMap.setOnCameraIdleListener(this@MapFragment)
+            googleMap.setOnInfoWindowClickListener(this@MapFragment)
+
+            enableLocation()
+            queryMarkersData()
+        }
 
         return view
     }
@@ -53,51 +73,16 @@ class MapFragment : Fragment(), OnMapReadyCallback, OnCameraIdleListener,
         fun newInstance() = MapFragment()
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode != RequestCode.PERMISSION_GEOLOCATION.ordinal) {
-            return
-        }
-
-        val expected = intArrayOf(PackageManager.PERMISSION_GRANTED)
-        if (grantResults.isEmpty() || !grantResults.contentEquals(expected)) {
-            // TODO: Handle reject
-            return
-        }
-
-        // FIXME: Doesn't show your location right after enabling access
-        enableLocation()
-    }
-
-    override fun onMapReady(googleMap: GoogleMap) {
-        googleMap.setOnCameraIdleListener(this)
-        googleMap.setOnInfoWindowClickListener(this)
-        this.googleMap = googleMap
-
-        enableLocation()
-        queryMarkersData()
-    }
-
     private fun enableLocation() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            requestPermissions(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                RequestCode.PERMISSION_GEOLOCATION.ordinal
-            )
-
+            requestGeolocationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             return
         }
 
-        googleMap.uiSettings.isMyLocationButtonEnabled = true
         googleMap.isMyLocationEnabled = true
     }
 
@@ -169,15 +154,11 @@ class MapFragment : Fragment(), OnMapReadyCallback, OnCameraIdleListener,
     }
 
     private fun loadFragmentOnStack(fragment: Fragment) {
-        fragmentManager?.let {
-            with(it.beginTransaction()) {
-                val tag = FragmentTags.MAP.toString()
+        with(parentFragmentManager.beginTransaction()) {
+            replace(R.id.app_content, fragment, getString(R.string.fragment_tag_map))
+            addToBackStack(tag)
 
-                replace(R.id.app_content, fragment, tag)
-                addToBackStack(tag)
-
-                commit()
-            }
+            commit()
         }
     }
 

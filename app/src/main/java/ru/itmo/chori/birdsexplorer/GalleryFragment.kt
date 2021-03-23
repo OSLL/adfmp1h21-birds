@@ -121,15 +121,11 @@ class GalleryFragment : Fragment() {
     }
 
     private fun loadFragmentOnStack(fragment: Fragment) {
-        fragmentManager?.let {
-            with(it.beginTransaction()) {
-                val tag = FragmentTags.GALLERY.toString()
+        with(parentFragmentManager.beginTransaction()) {
+            replace(R.id.app_content, fragment, getString(R.string.fragment_tag_gallery))
+            addToBackStack(tag)
 
-                replace(R.id.app_content, fragment, tag)
-                addToBackStack(tag)
-
-                commit()
-            }
+            commit()
         }
     }
 
