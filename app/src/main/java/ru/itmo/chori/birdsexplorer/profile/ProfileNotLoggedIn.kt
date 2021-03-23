@@ -13,6 +13,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_profile_not_logged_in.*
 import ru.itmo.chori.birdsexplorer.R
+import ru.itmo.chori.birdsexplorer.utils.loadFragment
 
 
 class ProfileNotLoggedIn : Fragment() {
@@ -66,14 +67,7 @@ class ProfileNotLoggedIn : Fragment() {
 
     private fun loadLoggedInUserFragment() {
         FirebaseAuth.getInstance().currentUser?.let { user ->
-            loadFragment(ProfileLoggedIn.newInstance(user))
-        }
-    }
-
-    private fun loadFragment(fragment: Fragment) {
-        with(parentFragmentManager.beginTransaction()) {
-            replace(R.id.app_content, fragment)
-            commit()
+            loadFragment(parentFragmentManager, ProfileLoggedIn.newInstance(user))
         }
     }
 

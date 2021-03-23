@@ -8,6 +8,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.itmo.chori.birdsexplorer.profile.ProfileNotLoggedIn
+import ru.itmo.chori.birdsexplorer.utils.loadFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var analytics: FirebaseAnalytics
@@ -37,7 +38,7 @@ class MainActivity : AppCompatActivity() {
                             param(FirebaseAnalytics.Param.SCREEN_NAME, "gallery")
                         }
 
-                        loadFragment(GalleryFragment.newInstance())
+                        loadFragment(supportFragmentManager, GalleryFragment.newInstance())
                         return@setOnNavigationItemSelectedListener true
                     }
 
@@ -50,7 +51,7 @@ class MainActivity : AppCompatActivity() {
                             param(FirebaseAnalytics.Param.SCREEN_NAME, "add_bird")
                         }
 
-                        loadFragment(AddBirdFragment.newInstance())
+                        loadFragment(supportFragmentManager, AddBirdFragment.newInstance())
                         return@setOnNavigationItemSelectedListener true
                     }
 
@@ -63,7 +64,7 @@ class MainActivity : AppCompatActivity() {
                             param(FirebaseAnalytics.Param.SCREEN_NAME, "map")
                         }
 
-                        loadFragment(MapFragment.newInstance())
+                        loadFragment(supportFragmentManager, MapFragment.newInstance())
                         return@setOnNavigationItemSelectedListener true
                     }
 
@@ -76,7 +77,7 @@ class MainActivity : AppCompatActivity() {
                             param(FirebaseAnalytics.Param.SCREEN_NAME, "profile")
                         }
 
-                        loadFragment(ProfileNotLoggedIn.newInstance())
+                        loadFragment(supportFragmentManager, ProfileNotLoggedIn.newInstance())
                         return@setOnNavigationItemSelectedListener true
                     }
                 }
@@ -84,13 +85,6 @@ class MainActivity : AppCompatActivity() {
                 false
             }
             selectedItemId = R.id.action_gallery
-        }
-    }
-
-    private fun loadFragment(fragment: Fragment) {
-        with(supportFragmentManager.beginTransaction()) {
-            replace(app_content.id, fragment)
-            commit()
         }
     }
 }

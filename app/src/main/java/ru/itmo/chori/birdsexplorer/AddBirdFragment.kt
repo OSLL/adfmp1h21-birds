@@ -34,6 +34,7 @@ import ru.itmo.chori.birdsexplorer.data.BirdViewModel
 import ru.itmo.chori.birdsexplorer.data.BirdViewModelFactory
 import ru.itmo.chori.birdsexplorer.profile.ProfileNotLoggedIn
 import ru.itmo.chori.birdsexplorer.utils.humanReadableLocation
+import ru.itmo.chori.birdsexplorer.utils.loadFragment
 import java.io.File
 
 class AddBirdFragment(private val bird: BirdModel? = null) : Fragment() {
@@ -58,7 +59,7 @@ class AddBirdFragment(private val bird: BirdModel? = null) : Fragment() {
     private val birdViewModel: BirdViewModel by viewModels { BirdViewModelFactory(bird) }
 
     private fun loadProfileFragment() {
-        loadFragment(ProfileNotLoggedIn.newInstance())
+        loadFragment(parentFragmentManager, ProfileNotLoggedIn.newInstance())
         navigationBar.selectedItemId = R.id.action_profile
     }
 
@@ -312,7 +313,7 @@ class AddBirdFragment(private val bird: BirdModel? = null) : Fragment() {
 
         currentBird.update(data)
             .addOnSuccessListener {
-                loadFragment(GalleryFragment.newInstance())
+                loadFragment(parentFragmentManager, GalleryFragment.newInstance())
             }.addOnFailureListener {
                 // TODO: Handle failure
             }.addOnCompleteListener {
@@ -351,20 +352,13 @@ class AddBirdFragment(private val bird: BirdModel? = null) : Fragment() {
                 firestore.collection("birds")
                     .add(newBird)
                     .addOnSuccessListener {
-                        loadFragment(GalleryFragment.newInstance())
+                        loadFragment(parentFragmentManager, GalleryFragment.newInstance())
                     }.addOnFailureListener {
                         // TODO: Handle failure
                     }.addOnCompleteListener {
                         progressBar.visibility = View.INVISIBLE
                     }
             }
-    }
-
-    private fun loadFragment(fragment: Fragment) {
-        with(parentFragmentManager.beginTransaction()) {
-            replace(R.id.app_content, fragment)
-            commit()
-        }
     }
 
     override fun onResume() {

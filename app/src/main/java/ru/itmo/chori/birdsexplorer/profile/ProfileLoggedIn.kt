@@ -22,6 +22,8 @@ import kotlinx.android.synthetic.main.fragment_profile_logged_in.*
 import ru.itmo.chori.birdsexplorer.BirdFragment
 import ru.itmo.chori.birdsexplorer.R
 import ru.itmo.chori.birdsexplorer.data.BirdModel
+import ru.itmo.chori.birdsexplorer.utils.loadFragment
+import ru.itmo.chori.birdsexplorer.utils.loadFragmentOnStack
 
 private const val ARG_USER = "user"
 
@@ -68,7 +70,11 @@ class ProfileLoggedIn : Fragment() {
                     .into(holder.birdImage)
 
                 holder.itemView.setOnClickListener {
-                    loadFragmentOnStack(BirdFragment.newInstance(model))
+                    loadFragmentOnStack(
+                        parentFragmentManager,
+                        BirdFragment.newInstance(model),
+                        getString(R.string.fragment_tag_gallery)
+                    )
                 }
             }
 
@@ -80,15 +86,6 @@ class ProfileLoggedIn : Fragment() {
         }
     }
 
-    private fun loadFragmentOnStack(fragment: Fragment) {
-        with(parentFragmentManager.beginTransaction()) {
-            replace(R.id.app_content, fragment, getString(R.string.fragment_tag_gallery))
-            addToBackStack(tag)
-
-            commit()
-        }
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.action_bar_profile_menu, menu)
@@ -97,7 +94,7 @@ class ProfileLoggedIn : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.action_logout -> {
             AuthUI.getInstance().signOut(requireContext()).addOnCompleteListener {
-                loadFragment(ProfileNotLoggedIn.newInstance())
+                loadFragment(parentFragmentManager, ProfileNotLoggedIn.newInstance())
             }
 
             true
@@ -150,13 +147,6 @@ class ProfileLoggedIn : Fragment() {
     override fun onStart() {
         super.onStart()
         firestoreAdapter.startListening()
-    }
-
-    private fun loadFragment(fragment: Fragment) {
-        with(parentFragmentManager.beginTransaction()) {
-            replace(R.id.app_content, fragment)
-            commit()
-        }
     }
 
     companion object {

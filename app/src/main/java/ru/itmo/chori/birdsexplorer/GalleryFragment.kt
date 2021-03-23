@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.itmo.chori.birdsexplorer.data.BirdModel
 import ru.itmo.chori.birdsexplorer.utils.humanReadableLocation
+import ru.itmo.chori.birdsexplorer.utils.loadFragmentOnStack
 import java.text.DateFormat
 
 class GalleryFragment : Fragment() {
@@ -85,7 +86,11 @@ class GalleryFragment : Fragment() {
                 )
 
                 holder.itemView.setOnClickListener {
-                    loadFragmentOnStack(BirdFragment.newInstance(model))
+                    loadFragmentOnStack(
+                        parentFragmentManager,
+                        BirdFragment.newInstance(model),
+                        getString(R.string.fragment_tag_gallery)
+                    )
                 }
             }
         }
@@ -118,15 +123,6 @@ class GalleryFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         firestoreAdapter.startListening()
-    }
-
-    private fun loadFragmentOnStack(fragment: Fragment) {
-        with(parentFragmentManager.beginTransaction()) {
-            replace(R.id.app_content, fragment, getString(R.string.fragment_tag_gallery))
-            addToBackStack(tag)
-
-            commit()
-        }
     }
 
     companion object {

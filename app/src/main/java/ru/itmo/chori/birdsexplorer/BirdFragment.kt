@@ -17,6 +17,7 @@ import com.google.firebase.storage.ktx.storage
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.android.synthetic.main.fragment_bird.*
 import ru.itmo.chori.birdsexplorer.data.BirdModel
+import ru.itmo.chori.birdsexplorer.utils.loadFragmentOnStack
 
 private const val ARG_BIRD = "bird"
 
@@ -65,7 +66,11 @@ class BirdFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.action_edit_bird -> {
-            loadFragmentOnStack(AddBirdFragment.newInstance(bird))
+            loadFragmentOnStack(
+                parentFragmentManager,
+                AddBirdFragment.newInstance(bird),
+                getString(R.string.fragment_tag_gallery)
+            )
             true
         }
         R.id.action_remove_bird -> {
@@ -80,15 +85,6 @@ class BirdFragment : Fragment() {
             true
         }
         else -> super.onOptionsItemSelected(item)
-    }
-
-    private fun loadFragmentOnStack(fragment: Fragment) {
-        with(parentFragmentManager.beginTransaction()) {
-            replace(R.id.app_content, fragment, getString(R.string.fragment_tag_gallery))
-            addToBackStack(tag)
-
-            commit()
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

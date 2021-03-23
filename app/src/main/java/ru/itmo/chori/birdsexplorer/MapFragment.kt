@@ -24,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.maps.android.ktx.awaitMap
 import ru.itmo.chori.birdsexplorer.data.BirdModel
+import ru.itmo.chori.birdsexplorer.utils.loadFragmentOnStack
 
 class MapFragment : Fragment(), OnCameraIdleListener, GoogleMap.OnInfoWindowClickListener {
     private lateinit var googleMap: GoogleMap
@@ -153,17 +154,12 @@ class MapFragment : Fragment(), OnCameraIdleListener, GoogleMap.OnInfoWindowClic
         queryMarkersData()
     }
 
-    private fun loadFragmentOnStack(fragment: Fragment) {
-        with(parentFragmentManager.beginTransaction()) {
-            replace(R.id.app_content, fragment, getString(R.string.fragment_tag_map))
-            addToBackStack(tag)
-
-            commit()
-        }
-    }
-
     override fun onInfoWindowClick(marker: Marker) {
         val bird = marker.tag as BirdModel
-        loadFragmentOnStack(BirdFragment.newInstance(bird))
+        loadFragmentOnStack(
+            parentFragmentManager,
+            BirdFragment.newInstance(bird),
+            getString(R.string.fragment_tag_map)
+        )
     }
 }
