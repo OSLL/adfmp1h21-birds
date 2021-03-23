@@ -35,6 +35,8 @@
     <string name="add_bird_location_not_geo_encoded">Location: %fº N, %fº E</string>
 
     // Validation
+    <string name="validation_generic_field_is_required">This field is required</string>
+    <string name="validation_name_field_is_required">Please, enter a name for this bird</string>
     <string name="error_empty_coordinates">Please, specify location of the bird</string>
     <string name="error_empty_photo">Please, upload a photo or image of the bird</string>
 

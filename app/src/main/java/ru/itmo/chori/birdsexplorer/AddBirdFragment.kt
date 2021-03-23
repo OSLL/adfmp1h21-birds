@@ -2,9 +2,14 @@ package ru.itmo.chori.birdsexplorer
 
 import android.location.Geocoder
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextUtils
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -34,14 +39,75 @@ class AddBirdFragment(bird: BirdModel? = null) : Fragment() {
 
         pickImageDialog = PickImageDialog.build(PickSetup())
             .setOnPickResult { result ->
+                val path = result.path
+                birdViewModel.image.postValue(path)
+
                 Glide.with(requireContext())
-                    .load(result.uri)
+                    .load(path)
                     .into(imageAddBird)
+
+                if (textImageAddBirdError.isVisible) {
+                    textImageAddBirdError.visibility = View.GONE
+                }
             }.setOnPickCancel {
-                // TODO: Handle refuse
+                if (birdViewModel.image.value == null) {
+                    textImageAddBirdError.visibility = View.VISIBLE
+                }
             }
 
         geocoder = Geocoder(context)
+
+        birdViewModel.location.observe(this) {
+            it?.let { position ->
+                birdCurrentLocationText.text = getString(
+                    R.string.add_bird_location_not_geo_encoded,
+                    position.latitude,
+                    position.longitude
+                )
+
+                lifecycleScope.launch(context = Dispatchers.IO) {
+                    humanReadableLocation(
+                        geocoder,
+                        GeoPoint(position.latitude, position.longitude)
+                    )?.let { text ->
+                        withContext(Dispatchers.Main) {
+                            birdCurrentLocationText.text = text
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showLocationFieldError(show: Boolean) {
+        if (show) {
+            openMapButtonErrorText.visibility = View.VISIBLE
+            openMapButtonHelperText.visibility = View.GONE
+        } else {
+            openMapButtonErrorText.visibility = View.GONE
+            openMapButtonHelperText.visibility = View.VISIBLE
+        }
+    }
+
+    private fun validate(): Boolean {
+        var noError = true
+
+        if (birdViewModel.name.value.isNullOrEmpty()) {
+            noError = false
+            textLayoutAddBirdName.error = getString(R.string.validation_name_field_is_required)
+        }
+
+        if (birdViewModel.image.value.isNullOrEmpty()) {
+            noError = false
+            textImageAddBirdError.visibility = View.VISIBLE
+        }
+
+        if (birdViewModel.location.value == null) {
+            noError = false
+            showLocationFieldError(true)
+        }
+
+        return noError
     }
 
     override fun onCreateView(
@@ -60,6 +126,26 @@ class AddBirdFragment(bird: BirdModel? = null) : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        textAddBirdName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                if (s.isBlank()) {
+                    textLayoutAddBirdName.error = getString(
+                        R.string.validation_name_field_is_required
+                    )
+                } else {
+                    textLayoutAddBirdName.error = null
+                }
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                birdViewModel.name.postValue(s.toString())
+            }
+        })
+
         imageAddBird.setOnClickListener {
             pickImageDialog.show(childFragmentManager)
         }
@@ -68,20 +154,13 @@ class AddBirdFragment(bird: BirdModel? = null) : Fragment() {
             val dialog = PickLocationFragment.newInstance()
 
             dialog.onOk = { position ->
-                birdCurrentLocationText.text = getString(
-                    R.string.add_bird_location_not_geo_encoded,
-                    position.latitude,
-                    position.longitude
-                )
-                lifecycleScope.launch(context = Dispatchers.IO) {
-                    humanReadableLocation(
-                        geocoder,
-                        GeoPoint(position.latitude, position.longitude)
-                    )?.let { text ->
-                        withContext(Dispatchers.Main) {
-                            birdCurrentLocationText.text = text
-                        }
-                    }
+                birdViewModel.location.postValue(GeoPoint(position.latitude, position.longitude))
+                showLocationFieldError(false)
+            }
+
+            dialog.onCancel = { _ ->
+                if (birdViewModel.location.value == null) {
+                    showLocationFieldError(true)
                 }
             }
 
@@ -89,6 +168,12 @@ class AddBirdFragment(bird: BirdModel? = null) : Fragment() {
                 childFragmentManager,
                 getString(R.string.fragment_tag_map_pick_location_dialog)
             )
+        }
+
+        buttonSaveBird.setOnClickListener {
+            if (!validate()) {
+                return@setOnClickListener
+            }
         }
     }
 
