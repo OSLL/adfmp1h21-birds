@@ -3,21 +3,23 @@ package ru.itmo.chori.birdsexplorer
 import android.location.Geocoder
 import android.os.Bundle
 import android.text.Editable
-import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DecodeFormat
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import com.google.firebase.firestore.GeoPoint
 import com.vansuita.pickimage.bundle.PickSetup
 import com.vansuita.pickimage.dialog.PickImageDialog
 import kotlinx.android.synthetic.main.fragment_add_bird.*
+import kotlinx.android.synthetic.main.fragment_pick_location.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -123,28 +125,30 @@ class AddBirdFragment(bird: BirdModel? = null) : Fragment() {
         return view
     }
 
+    private val birdNameValidator = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+
+        }
+
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            if (s.isBlank()) {
+                textLayoutAddBirdName.error = getString(
+                    R.string.validation_name_field_is_required
+                )
+            } else {
+                textLayoutAddBirdName.error = null
+            }
+        }
+
+        override fun afterTextChanged(s: Editable) {
+            birdViewModel.name.postValue(s.toString())
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        textAddBirdName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                if (s.isBlank()) {
-                    textLayoutAddBirdName.error = getString(
-                        R.string.validation_name_field_is_required
-                    )
-                } else {
-                    textLayoutAddBirdName.error = null
-                }
-            }
-
-            override fun afterTextChanged(s: Editable) {
-                birdViewModel.name.postValue(s.toString())
-            }
-        })
+        textAddBirdName.addTextChangedListener(birdNameValidator)
 
         imageAddBird.setOnClickListener {
             pickImageDialog.show(childFragmentManager)
@@ -168,6 +172,25 @@ class AddBirdFragment(bird: BirdModel? = null) : Fragment() {
                 childFragmentManager,
                 getString(R.string.fragment_tag_map_pick_location_dialog)
             )
+        }
+
+        buttonClearAddBird.setOnClickListener {
+            birdViewModel.image.postValue(null)
+            birdViewModel.location.postValue(null)
+
+            textAddBirdName.error = null
+            textAddBirdName.removeTextChangedListener(birdNameValidator)
+            textAddBirdName.text = null
+            textAddBirdName.addTextChangedListener(birdNameValidator)
+
+            Glide.with(requireContext())
+                .load(R.drawable.placeholder_image_add_bird_photo)
+                .dontTransform()
+                .into(imageAddBird)
+            textImageAddBirdError.visibility = View.GONE
+
+            birdCurrentLocationText.text = null
+            showLocationFieldError(false)
         }
 
         buttonSaveBird.setOnClickListener {

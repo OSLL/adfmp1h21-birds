@@ -29,7 +29,7 @@
     <string name="label_click_to_select_location">Click here to select location where bird was seen:</string>
     <string name="label_button_select_location">Open map</string>
     <string name="label_button_save">Save</string>
-    <string name="label_button_cancel">Cancel</string>
+    <string name="label_button_clear">Clear</string>
     <string name="label_click_to_select_location_detail">Click will open a map in overlay dialog</string>
     <string name="add_bird_location_undefined">Location: undefined</string>
     <string name="add_bird_location_not_geo_encoded">Location: %fº N, %fº E</string>
