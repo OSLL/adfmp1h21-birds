@@ -7,16 +7,19 @@ import com.google.firebase.firestore.GeoPoint
 
 
 class BirdViewModel(bird: BirdModel? = null) : ViewModel() {
+    val id: String?
     val name: MutableLiveData<String?>
     val image: MutableLiveData<String?>
     val location: MutableLiveData<GeoPoint?>
 
     init {
         if (bird != null) {
+            id = bird.id
             name = MutableLiveData(bird.name)
             image = MutableLiveData(bird.image)
             location = MutableLiveData(bird.location)
         } else {
+            id = null
             name = MutableLiveData(null)
             image = MutableLiveData(null)
             location = MutableLiveData(null)

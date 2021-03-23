@@ -13,17 +13,42 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.coroutineScope
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.firestore.GeoPoint
 import com.google.maps.android.ktx.awaitMap
+import ru.itmo.chori.birdsexplorer.utils.ParcelableGeoPoint
 
 typealias Callback = ((LatLng) -> Unit)
 
+private const val ARG_LOCATION = "location"
+
 class PickLocationFragment : DialogFragment() {
+    private var location: GeoPoint? = null
+
     companion object {
+        private const val DEFAULT_ZOOM = 14.0f
+
         @JvmStatic
-        fun newInstance() = PickLocationFragment()
+        fun newInstance(location: GeoPoint?) = PickLocationFragment().apply {
+            arguments = Bundle().apply {
+                location?.let {
+                    putParcelable(
+                        ARG_LOCATION,
+                        ParcelableGeoPoint(location.latitude, location.longitude)
+                    )
+                }
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            location = it.getParcelable<ParcelableGeoPoint>(ARG_LOCATION)?.unwrap()
+        }
     }
 
     // TODO: It's might be better to always show button and request permission on first click
@@ -90,6 +115,16 @@ class PickLocationFragment : DialogFragment() {
         ) as SupportMapFragment
         lifecycle.coroutineScope.launchWhenCreated {
             googleMap = mapFragment.awaitMap()
+
+            location?.let {
+                googleMap.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        LatLng(it.latitude, it.longitude),
+                        DEFAULT_ZOOM
+                    )
+                )
+            }
+
             enableLocation()
         }
     }

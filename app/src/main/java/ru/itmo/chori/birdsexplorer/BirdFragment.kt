@@ -3,10 +3,9 @@ package ru.itmo.chori.birdsexplorer
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.coroutineScope
 import com.bumptech.glide.Glide
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -15,12 +14,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import com.google.maps.android.ktx.awaitMap
 import kotlinx.android.synthetic.main.fragment_bird.*
 import ru.itmo.chori.birdsexplorer.data.BirdModel
 
 private const val ARG_BIRD = "bird"
 
-class BirdFragment : Fragment(), OnMapReadyCallback {
+class BirdFragment : Fragment() {
     private lateinit var bird: BirdModel
     private lateinit var oldTitle: CharSequence
     private lateinit var storage: StorageReference
@@ -65,7 +65,7 @@ class BirdFragment : Fragment(), OnMapReadyCallback {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.action_edit_bird -> {
-            // TODO: Implement after create bird page
+            loadFragmentOnStack(AddBirdFragment.newInstance(bird))
             true
         }
         R.id.action_remove_bird -> {
@@ -82,6 +82,15 @@ class BirdFragment : Fragment(), OnMapReadyCallback {
         else -> super.onOptionsItemSelected(item)
     }
 
+    private fun loadFragmentOnStack(fragment: Fragment) {
+        with(parentFragmentManager.beginTransaction()) {
+            replace(R.id.app_content, fragment, getString(R.string.fragment_tag_gallery))
+            addToBackStack(tag)
+
+            commit()
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Glide.with(requireActivity())
@@ -93,7 +102,13 @@ class BirdFragment : Fragment(), OnMapReadyCallback {
         )
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.mapView) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+        lifecycle.coroutineScope.launchWhenCreated {
+            val googleMap = mapFragment.awaitMap()
+            val location = LatLng(bird.location!!.latitude, bird.location!!.longitude)
+
+            googleMap.addMarker(MarkerOptions().position(location))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM))
+        }
     }
 
     override fun onResume() {
@@ -127,12 +142,5 @@ class BirdFragment : Fragment(), OnMapReadyCallback {
             }
 
         private const val DEFAULT_ZOOM = 14.0f
-    }
-
-    override fun onMapReady(googleMap: GoogleMap) {
-        val location = LatLng(bird.location!!.latitude, bird.location!!.longitude)
-
-        googleMap.addMarker(MarkerOptions().position(location))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM))
     }
 }
