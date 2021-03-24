@@ -1,9 +1,11 @@
 package ru.itmo.chori.birdsexplorer
 
+import android.location.Geocoder
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.SupportMapFragment
@@ -17,12 +19,18 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.android.synthetic.main.fragment_bird.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.itmo.chori.birdsexplorer.data.BirdModel
+import ru.itmo.chori.birdsexplorer.utils.humanReadableLocation
 import ru.itmo.chori.birdsexplorer.utils.loadFragmentOnStack
 
 private const val ARG_BIRD = "bird"
 
 class BirdFragment : Fragment() {
+    private lateinit var geocoder: Geocoder
+
     private lateinit var bird: BirdModel
     private lateinit var oldTitle: CharSequence
     private lateinit var storage: StorageReference
@@ -39,6 +47,8 @@ class BirdFragment : Fragment() {
 
         storage = Firebase.storage.reference
         firestore = FirebaseFirestore.getInstance()
+
+        geocoder = Geocoder(context)
     }
 
     override fun onCreateView(
@@ -49,6 +59,17 @@ class BirdFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_bird, container, false)
         requireActivity().apply {
             oldTitle = title
+        }
+
+        lifecycleScope.launch(context = Dispatchers.IO) {
+            humanReadableLocation(
+                geocoder,
+                GeoPoint(bird.location!!.latitude, bird.location!!.longitude)
+            )?.let { text ->
+                withContext(Dispatchers.Main) {
+                    textBirdSeenLocation.text = text
+                }
+            }
         }
 
         return view
