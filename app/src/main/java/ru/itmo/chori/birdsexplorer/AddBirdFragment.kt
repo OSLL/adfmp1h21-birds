@@ -136,17 +136,17 @@ class AddBirdFragment(private val bird: BirdModel? = null) : Fragment() {
     private fun validate(): Boolean {
         var noError = true
 
-        if (birdViewModel.name.value.isNullOrEmpty()) {
+        if (birdViewModel.isNameValid) {
             noError = false
             textLayoutAddBirdName.error = getString(R.string.validation_name_field_is_required)
         }
 
-        if (birdViewModel.image.value.isNullOrEmpty()) {
+        if (birdViewModel.isImageValid) {
             noError = false
             textImageAddBirdError.visibility = View.VISIBLE
         }
 
-        if (birdViewModel.location.value == null) {
+        if (birdViewModel.isLocationValid) {
             noError = false
             showLocationFieldError(true)
         }

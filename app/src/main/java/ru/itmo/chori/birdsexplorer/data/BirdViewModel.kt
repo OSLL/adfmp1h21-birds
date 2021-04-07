@@ -25,6 +25,18 @@ class BirdViewModel(bird: BirdModel? = null) : ViewModel() {
             location = MutableLiveData(null)
         }
     }
+
+    val isNameValid: Boolean
+    get() = !name.value.isNullOrBlank()
+
+    val isImageValid: Boolean
+    get() = !image.value.isNullOrBlank()
+
+    val isLocationValid: Boolean
+    get() = location.value != null
+
+    val isValid: Boolean
+    get() = isNameValid && isImageValid && isLocationValid
 }
 
 class BirdViewModelFactory(private val bird: BirdModel? = null) : ViewModelProvider.Factory {
