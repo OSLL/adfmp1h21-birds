@@ -97,7 +97,7 @@ dependencies {
 }
 
 tasks.register('run-on-github') {
-    dependsOn(":app:lint", ":app:test")
+    dependsOn(":app:test")
     group = "custom"
     description = '$ ./gradlew run-on-github # runs on GitHub Action'
 }
