@@ -1,8 +1,8 @@
 package ru.itmo.chori.birdsexplorer
 
 import com.google.firebase.firestore.GeoPoint
+import org.junit.Assert
 import org.junit.Test
-import org.junit.Assert.*
 import ru.itmo.chori.birdsexplorer.data.BirdModel
 import ru.itmo.chori.birdsexplorer.data.BirdViewModel
 
