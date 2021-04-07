@@ -30,6 +30,5 @@ jobs:
           java-version: '11'
       - name: Gradle Test
         uses: eskatos/gradle-command-action@v1
-          with:
-            arguments: test --stacktrace
-        id: gradle
+        with:
+          arguments: test --stacktrace
