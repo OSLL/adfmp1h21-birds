@@ -11,6 +11,10 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
+    lintOptions {
+        abortOnError false
+    }
+
     defaultConfig {
         applicationId "ru.itmo.chori.birdsexplorer"
         minSdkVersion 21
@@ -90,4 +94,10 @@ dependencies {
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+}
+
+tasks.register('run-on-github') {
+    dependsOn(":app:lint", ":app:test")
+    group = "custom"
+    description = '$ ./gradlew run-on-github # runs on GitHub Action'
 }
