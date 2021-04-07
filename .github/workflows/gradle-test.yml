@@ -29,9 +29,4 @@ jobs:
          distribution: 'adopt'
          java-version: '11'
       - name: Gradle Test
-        uses: eskatos/gradle-command-action@v1
-        with:
-          arguments: run-on-github
-          wrapper-cache-enabled: true
-          dependencies-cache-enabled: true
-          configuration-cache-enabled: true
+        run: ./gradlew test
