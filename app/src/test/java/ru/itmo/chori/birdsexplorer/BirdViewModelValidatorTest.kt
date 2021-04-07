@@ -1,9 +1,8 @@
 package ru.itmo.chori.birdsexplorer
 
 import com.google.firebase.firestore.GeoPoint
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
-import org.junitpioneer.jupiter.CartesianProductTest
+import org.junit.Test
+import org.junit.Assert.*
 import ru.itmo.chori.birdsexplorer.data.BirdModel
 import ru.itmo.chori.birdsexplorer.data.BirdViewModel
 
@@ -13,7 +12,7 @@ class BirdViewModelValidatorTest {
         val bird = BirdModel(name = "Pigeon")
         val viewModel = BirdViewModel(bird)
 
-        Assertions.assertTrue(viewModel.isNameValid)
+        Assert.assertTrue(viewModel.isNameValid)
     }
 
     @Test
@@ -21,7 +20,7 @@ class BirdViewModelValidatorTest {
         val bird = BirdModel(name = "")
         val viewModel = BirdViewModel(bird)
 
-        Assertions.assertFalse(viewModel.isNameValid)
+        Assert.assertFalse(viewModel.isNameValid)
     }
 
     @Test
@@ -29,7 +28,7 @@ class BirdViewModelValidatorTest {
         val bird = BirdModel(name = "    ")
         val viewModel = BirdViewModel(bird)
 
-        Assertions.assertFalse(viewModel.isNameValid)
+        Assert.assertFalse(viewModel.isNameValid)
     }
 
     @Test
@@ -37,7 +36,7 @@ class BirdViewModelValidatorTest {
         val bird = BirdModel(name = null)
         val viewModel = BirdViewModel(bird)
 
-        Assertions.assertFalse(viewModel.isNameValid)
+        Assert.assertFalse(viewModel.isNameValid)
     }
 
     @Test
@@ -45,7 +44,7 @@ class BirdViewModelValidatorTest {
         val bird = BirdModel(image = "pigeon.jpeg")
         val viewModel = BirdViewModel(bird)
 
-        Assertions.assertTrue(viewModel.isImageValid)
+        Assert.assertTrue(viewModel.isImageValid)
     }
 
     @Test
@@ -53,7 +52,7 @@ class BirdViewModelValidatorTest {
         val bird = BirdModel(image = "")
         val viewModel = BirdViewModel(bird)
 
-        Assertions.assertFalse(viewModel.isImageValid)
+        Assert.assertFalse(viewModel.isImageValid)
     }
 
     @Test
@@ -61,7 +60,7 @@ class BirdViewModelValidatorTest {
         val bird = BirdModel(image = "   ")
         val viewModel = BirdViewModel(bird)
 
-        Assertions.assertFalse(viewModel.isImageValid)
+        Assert.assertFalse(viewModel.isImageValid)
     }
 
     @Test
@@ -69,7 +68,7 @@ class BirdViewModelValidatorTest {
         val bird = BirdModel(image = null)
         val viewModel = BirdViewModel(bird)
 
-        Assertions.assertFalse(viewModel.isImageValid)
+        Assert.assertFalse(viewModel.isImageValid)
     }
 
     @Test
@@ -77,7 +76,7 @@ class BirdViewModelValidatorTest {
         val bird = BirdModel(location = GeoPoint(10.0, 20.0))
         val viewModel = BirdViewModel(bird)
 
-        Assertions.assertTrue(viewModel.isLocationValid)
+        Assert.assertTrue(viewModel.isLocationValid)
     }
 
     @Test
@@ -85,23 +84,25 @@ class BirdViewModelValidatorTest {
         val bird = BirdModel(location = null)
         val viewModel = BirdViewModel(bird)
 
-        Assertions.assertFalse(viewModel.isLocationValid)
+        Assert.assertFalse(viewModel.isLocationValid)
     }
 
-    companion object {
-        @JvmStatic
-        fun isValid(): CartesianProductTest.Sets = CartesianProductTest.Sets()
-            .add("Pigeon", "     ", "", null)
-            .add("pigeon.png", " ", "", null)
-            .add(GeoPoint(-20.0, 10.0), null)
-    }
-
-    @CartesianProductTest
-    fun isValid(name: String?, image: String?, location: GeoPoint?) {
-        val bird = BirdModel(name = name, image = image, location = location)
-        val birdModel = BirdViewModel(bird)
-
-        val expected = !name.isNullOrBlank() && !image.isNullOrBlank() && location != null
-        Assertions.assertEquals(expected, birdModel.isValid)
-    }
+// // Works only with JUnit 5. GitHub CI can't run it
+//
+//    companion object {
+//        @JvmStatic
+//        fun isValid(): CartesianProductTest.Sets = CartesianProductTest.Sets()
+//            .add("Pigeon", "     ", "", null)
+//            .add("pigeon.png", " ", "", null)
+//            .add(GeoPoint(-20.0, 10.0), null)
+//    }
+//
+//    @CartesianProductTest
+//    fun isValid(name: String?, image: String?, location: GeoPoint?) {
+//        val bird = BirdModel(name = name, image = image, location = location)
+//        val birdModel = BirdViewModel(bird)
+//
+//        val expected = !name.isNullOrBlank() && !image.isNullOrBlank() && location != null
+//        Assert.assertEquals(expected, birdModel.isValid)
+//    }
 }
