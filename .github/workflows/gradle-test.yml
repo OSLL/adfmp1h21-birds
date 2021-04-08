@@ -20,7 +20,7 @@ jobs:
           java-version: '11'
       - name: Create local.properties
         env:
-          MAPS_API_KEY: ${{ secrets.mapsApiKey }}
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
         run: echo maps_api_key="$MAPS_API_KEY" > ./local.properties
       - name: Read local.properties
         id: props
