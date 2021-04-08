@@ -32,6 +32,7 @@ import kotlinx.coroutines.withContext
 import ru.itmo.chori.birdsexplorer.data.BirdModel
 import ru.itmo.chori.birdsexplorer.data.BirdViewModel
 import ru.itmo.chori.birdsexplorer.data.BirdViewModelFactory
+import ru.itmo.chori.birdsexplorer.dialog.ErrorDialogFragment
 import ru.itmo.chori.birdsexplorer.profile.ProfileNotLoggedIn
 import ru.itmo.chori.birdsexplorer.utils.humanReadableLocation
 import ru.itmo.chori.birdsexplorer.utils.loadFragment
@@ -274,7 +275,11 @@ class AddBirdFragment(private val bird: BirdModel? = null) : Fragment() {
 
                 fileReference.putFile(file)
                     .addOnFailureListener {
-                        // TODO: Handle failure: e.g. rejection due to unauthenticated
+                        ErrorDialogFragment(
+                            it.message ?: getString(R.string.unknown_error)
+                        ).show(childFragmentManager, getString(R.string.error_upload_file))
+
+                        progressBar.visibility = View.INVISIBLE
                     }
                     .addOnSuccessListener {
                         updateBird()
@@ -315,7 +320,9 @@ class AddBirdFragment(private val bird: BirdModel? = null) : Fragment() {
             .addOnSuccessListener {
                 loadFragment(parentFragmentManager, GalleryFragment.newInstance())
             }.addOnFailureListener {
-                // TODO: Handle failure
+                ErrorDialogFragment(
+                    it.message ?: getString(R.string.unknown_error)
+                ).show(childFragmentManager, getString(R.string.error_upload_bird))
             }.addOnCompleteListener {
                 progressBar.visibility = View.INVISIBLE
             }
@@ -333,7 +340,11 @@ class AddBirdFragment(private val bird: BirdModel? = null) : Fragment() {
 
         fileReference.putFile(file)
             .addOnFailureListener {
-                // TODO: Handle failure: e.g. rejection due to unauthenticated
+                ErrorDialogFragment(
+                    it.message ?: getString(R.string.unknown_error)
+                ).show(childFragmentManager, getString(R.string.error_upload_file))
+
+                progressBar.visibility = View.INVISIBLE
             }.addOnSuccessListener {
                 val geoLocation = GeoLocation(
                     birdViewModel.location.value!!.latitude,
@@ -354,7 +365,9 @@ class AddBirdFragment(private val bird: BirdModel? = null) : Fragment() {
                     .addOnSuccessListener {
                         loadFragment(parentFragmentManager, GalleryFragment.newInstance())
                     }.addOnFailureListener {
-                        // TODO: Handle failure
+                        ErrorDialogFragment(
+                            it.message ?: getString(R.string.unknown_error)
+                        ).show(childFragmentManager, getString(R.string.error_upload_bird))
                     }.addOnCompleteListener {
                         progressBar.visibility = View.INVISIBLE
                     }
