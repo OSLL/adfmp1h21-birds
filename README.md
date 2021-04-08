@@ -1,5 +1,7 @@
 # adfmp1h21-birds
 
+[![Test](https://github.com/OSLL/adfmp1h21-birds/actions/workflows/gradle-test.yml/badge.svg)](https://github.com/OSLL/adfmp1h21-birds/actions/workflows/gradle-test.yml)
+
 ## Демонстрация работы Android Studio
 
 Демонстрацию можно посмотреть по ссылке (Google Drive): 
