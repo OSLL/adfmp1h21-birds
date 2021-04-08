@@ -41,6 +41,10 @@
     <string name="error_empty_coordinates">Please, specify location of the bird</string>
     <string name="error_empty_photo">Please, upload a photo or image of the bird</string>
 
+    // Errors
+    <string name="unknown_error">Unknown error</string>
+    <string name="login_declined">If you want to be able to add info about birds, you should enter to your profile</string>
+
     // Location picker
     <string name="pin_description">Pin, which helps to more precisely see selected location on map</string>
 
