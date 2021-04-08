@@ -9,4 +9,5 @@
     <string name="error_not_logged_in" translatable="false">NOT_LOGGED_IN</string>
     <string name="error_upload_file" translatable="false">ERROR_UPLOAD</string>
     <string name="error_upload_bird" translatable="false">ERROR_UPLOAD_BIRD</string>
+    <string name="error_remove_bird" translatable="false">ERROR_REMOVE_BIRD</string>
 </resources>

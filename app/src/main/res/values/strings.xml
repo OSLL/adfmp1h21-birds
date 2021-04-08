@@ -45,6 +45,9 @@
     <string name="unknown_error">Unknown error</string>
     <string name="login_declined">If you want to be able to add info about birds, you should enter to your profile</string>
 
+    // Notifications
+    <string name="notification_bird_was_removed">The bird %s was successfully removed!</string>
+
     // Location picker
     <string name="pin_description">Pin, which helps to more precisely see selected location on map</string>
 
