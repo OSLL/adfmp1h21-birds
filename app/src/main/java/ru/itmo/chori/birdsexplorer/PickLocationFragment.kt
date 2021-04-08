@@ -59,8 +59,6 @@ class PickLocationFragment : DialogFragment() {
             // FIXME: Doesn't moves camera to user location right after permission given. See https://issuetracker.google.com/issues/73122459
             enableLocation()
         }
-
-        // TODO: Handle reject
     }
 
     var onOk: Callback? = null
