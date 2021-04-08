@@ -18,7 +18,18 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '11'
+      - name: Create local.properties
+        env:
+          MAPS_API_KEY: ${{ secrets.mapsApiKey }}
+        run: echo maps_api_key="$MAPS_API_KEY" > ./local.properties
+      - name: Read local.properties
+        id: props
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./local.properties
+      - name: Echo local.properties
+        run: echo ${{ steps.props.outputs.content }}
       - name: Gradle Test
         uses: eskatos/gradle-command-action@v1
         with:
-          arguments: test --stacktrace
+          arguments: test
