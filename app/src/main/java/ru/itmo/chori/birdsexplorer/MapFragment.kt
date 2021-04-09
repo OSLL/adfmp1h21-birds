@@ -29,7 +29,7 @@ import ru.itmo.chori.birdsexplorer.data.BirdModel
 import ru.itmo.chori.birdsexplorer.utils.ParcelableGeoPoint
 import ru.itmo.chori.birdsexplorer.utils.loadFragmentOnStack
 
-private const val ARG_LOCATION = "location"
+internal const val ARG_LOCATION = "location"
 
 class MapFragment : Fragment(), OnCameraIdleListener, GoogleMap.OnInfoWindowClickListener {
     private var location: GeoPoint? = null

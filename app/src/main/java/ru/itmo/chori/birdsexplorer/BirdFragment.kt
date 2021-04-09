@@ -29,12 +29,12 @@ import ru.itmo.chori.birdsexplorer.dialog.ErrorDialogFragment
 import ru.itmo.chori.birdsexplorer.utils.humanReadableLocation
 import ru.itmo.chori.birdsexplorer.utils.loadFragmentOnStack
 
-private const val ARG_BIRD = "bird"
+internal const val ARG_BIRD = "bird"
 
 class BirdFragment : Fragment() {
     private lateinit var geocoder: Geocoder
 
-    private lateinit var progressBar: ProgressBar
+    private var progressBar: ProgressBar? = null
     private lateinit var bird: BirdModel
     private lateinit var oldTitle: CharSequence
     private lateinit var storage: StorageReference
@@ -52,7 +52,7 @@ class BirdFragment : Fragment() {
         storage = Firebase.storage.reference
         firestore = FirebaseFirestore.getInstance()
 
-        progressBar = requireActivity().findViewById(R.id.progressBar)
+        progressBar = activity?.findViewById(R.id.progressBar)
 
         geocoder = Geocoder(context)
     }
@@ -102,7 +102,7 @@ class BirdFragment : Fragment() {
             true
         }
         R.id.action_remove_bird -> {
-            progressBar.visibility = View.VISIBLE
+            progressBar?.visibility = View.VISIBLE
 
             firestore.collection("birds").document(bird.id!!).delete()
                 .addOnSuccessListener {
@@ -116,7 +116,7 @@ class BirdFragment : Fragment() {
                         it.message ?: getString(R.string.unknown_error)
                     ).show(childFragmentManager, getString(R.string.error_remove_bird))
                 }.addOnCompleteListener {
-                    progressBar.visibility = View.INVISIBLE
+                    progressBar?.visibility = View.INVISIBLE
                 }
 
             childFragmentManager.popBackStack()

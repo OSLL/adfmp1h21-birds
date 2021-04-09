@@ -25,7 +25,7 @@ import ru.itmo.chori.birdsexplorer.data.BirdModel
 import ru.itmo.chori.birdsexplorer.utils.loadFragment
 import ru.itmo.chori.birdsexplorer.utils.loadFragmentOnStack
 
-private const val ARG_USER = "user"
+internal const val ARG_USER = "user"
 
 class ProfileLoggedIn : Fragment() {
     private lateinit var user: FirebaseUser

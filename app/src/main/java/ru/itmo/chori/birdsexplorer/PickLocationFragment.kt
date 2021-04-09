@@ -23,8 +23,6 @@ import ru.itmo.chori.birdsexplorer.utils.ParcelableGeoPoint
 
 typealias Callback = ((LatLng) -> Unit)
 
-private const val ARG_LOCATION = "location"
-
 class PickLocationFragment : DialogFragment() {
     private var location: GeoPoint? = null
 
