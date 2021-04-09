@@ -10,4 +10,6 @@
     <string name="error_upload_file" translatable="false">ERROR_UPLOAD</string>
     <string name="error_upload_bird" translatable="false">ERROR_UPLOAD_BIRD</string>
     <string name="error_remove_bird" translatable="false">ERROR_REMOVE_BIRD</string>
+    <string name="error_remove_bird_demo" translatable="false">ERROR_REMOVE_BIRD_DEMO</string>
+    <string name="error_edit_bird_demo" translatable="false">ERROR_EDIT_BIRD_DEMO</string>
 </resources>

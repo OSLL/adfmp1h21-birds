@@ -9,6 +9,10 @@ import kotlinx.android.synthetic.main.activity_main.*
 import ru.itmo.chori.birdsexplorer.profile.ProfileNotLoggedIn
 import ru.itmo.chori.birdsexplorer.utils.loadFragment
 
+object State {
+    var isDemoLogin = false
+}
+
 class MainActivity : AppCompatActivity() {
     private lateinit var analytics: FirebaseAnalytics
 

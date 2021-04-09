@@ -14,6 +14,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_profile_not_logged_in.*
 import ru.itmo.chori.birdsexplorer.R
+import ru.itmo.chori.birdsexplorer.State
 import ru.itmo.chori.birdsexplorer.dialog.ErrorDialogFragment
 import ru.itmo.chori.birdsexplorer.utils.loadFragment
 
@@ -40,7 +41,12 @@ class ProfileNotLoggedIn : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loadLoggedInUserFragment()
+
+        if (State.isDemoLogin) {
+            loadDemoUserFragment()
+        } else {
+            loadLoggedInUserFragment()
+        }
     }
 
     override fun onCreateView(
@@ -53,6 +59,10 @@ class ProfileNotLoggedIn : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        button_demo_log_in.setOnClickListener {
+            loadDemoUserFragment()
+        }
 
         button_log_in.setOnClickListener {
             if (Firebase.auth.currentUser == null) {
@@ -79,6 +89,11 @@ class ProfileNotLoggedIn : Fragment() {
         FirebaseAuth.getInstance().currentUser?.let { user ->
             loadFragment(parentFragmentManager, ProfileLoggedIn.newInstance(user))
         }
+    }
+
+    private fun loadDemoUserFragment() {
+        State.isDemoLogin = true
+        loadFragment(parentFragmentManager, ProfileDemoLoggedIn.newInstance())
     }
 
     companion object {

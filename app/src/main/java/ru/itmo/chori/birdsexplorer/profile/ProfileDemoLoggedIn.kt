@@ -1,43 +1,32 @@
 package ru.itmo.chori.birdsexplorer.profile
 
 import android.os.Bundle
-import android.text.TextUtils
 import android.view.*
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
-import kotlinx.android.synthetic.main.fragment_profile_logged_in.*
+import kotlinx.android.synthetic.main.fragment_profile_demo_logged_in.*
 import ru.itmo.chori.birdsexplorer.BirdFragment
 import ru.itmo.chori.birdsexplorer.R
+import ru.itmo.chori.birdsexplorer.State
 import ru.itmo.chori.birdsexplorer.data.BirdModel
 import ru.itmo.chori.birdsexplorer.utils.loadFragment
 import ru.itmo.chori.birdsexplorer.utils.loadFragmentOnStack
 
-internal const val ARG_USER = "user"
-
-class ProfileLoggedIn : Fragment() {
-    private lateinit var user: FirebaseUser
+class ProfileDemoLoggedIn : Fragment() {
     private lateinit var firestoreAdapter: FirestoreRecyclerAdapter<BirdModel, BirdsViewHolder>
     private lateinit var firestore: FirebaseFirestore
     private lateinit var storage: StorageReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            user = it.getParcelable(ARG_USER)!!
-        }
 
         setHasOptionsMenu(true)
 
@@ -45,7 +34,6 @@ class ProfileLoggedIn : Fragment() {
         storage = Firebase.storage.reference
 
         val query = firestore.collection("birds")
-            .whereEqualTo("author", user.uid)
         val options = with(FirestoreRecyclerOptions.Builder<BirdModel>()) {
             setQuery(query, BirdModel::class.java)
         }.build()
@@ -93,9 +81,8 @@ class ProfileLoggedIn : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.action_logout -> {
-            AuthUI.getInstance().signOut(requireContext()).addOnCompleteListener {
-                loadFragment(parentFragmentManager, ProfileNotLoggedIn.newInstance())
-            }
+            State.isDemoLogin = false
+            loadFragment(parentFragmentManager, ProfileNotLoggedIn.newInstance())
 
             true
         }
@@ -124,7 +111,7 @@ class ProfileLoggedIn : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val escapedUsername = TextUtils.htmlEncode(user.displayName)
+        val escapedUsername = "demo user"
         val profileWelcomeText = getString(R.string.profile_logged_welcome, escapedUsername)
         profile_welcome.text = HtmlCompat.fromHtml(
             profileWelcomeText,
@@ -150,24 +137,7 @@ class ProfileLoggedIn : Fragment() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param user Authenticated user.
-         * @return A new instance of fragment ProfileLoggedIn.
-         */
         @JvmStatic
-        fun newInstance(user: FirebaseUser) =
-            ProfileLoggedIn().apply {
-                arguments = Bundle().apply {
-                    putParcelable(ARG_USER, user)
-                }
-            }
+        fun newInstance() = ProfileDemoLoggedIn()
     }
-}
-
-internal class BirdsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    val birdName: TextView = itemView.findViewById(R.id.birdNameInProfile)
-    val birdImage: ImageView = itemView.findViewById(R.id.birdPhotoInProfile)
 }

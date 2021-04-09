@@ -72,7 +72,7 @@ class AddBirdFragment(private val bird: BirdModel? = null) : Fragment() {
 
         firebaseAuth = FirebaseAuth.getInstance()
         // Note: token may expire at any time when authentication is required
-        if (firebaseAuth.currentUser == null) {
+        if (firebaseAuth.currentUser == null && !State.isDemoLogin) {
             loadProfileFragment()
             return
         }
@@ -137,17 +137,17 @@ class AddBirdFragment(private val bird: BirdModel? = null) : Fragment() {
     private fun validate(): Boolean {
         var noError = true
 
-        if (birdViewModel.isNameValid) {
+        if (!birdViewModel.isNameValid) {
             noError = false
             textLayoutAddBirdName.error = getString(R.string.validation_name_field_is_required)
         }
 
-        if (birdViewModel.isImageValid) {
+        if (!birdViewModel.isImageValid) {
             noError = false
             textImageAddBirdError.visibility = View.VISIBLE
         }
 
-        if (birdViewModel.isLocationValid) {
+        if (!birdViewModel.isLocationValid) {
             noError = false
             showLocationFieldError(true)
         }
@@ -247,12 +247,20 @@ class AddBirdFragment(private val bird: BirdModel? = null) : Fragment() {
 
         buttonSaveBird.text = getString(
             when (mode) {
-                Mode.EDIT -> R.string.label_button_save
-                Mode.CREATE -> R.string.label_button_update
+                Mode.EDIT -> R.string.label_button_update
+                Mode.CREATE -> R.string.label_button_save
             }
         )
         buttonSaveBird.setOnClickListener {
             if (!validate()) {
+                return@setOnClickListener
+            }
+
+            if (State.isDemoLogin) {
+                ErrorDialogFragment(getString(R.string.remove_declined)).show(
+                    childFragmentManager,
+                    getString(R.string.error_remove_bird_demo)
+                )
                 return@setOnClickListener
             }
 

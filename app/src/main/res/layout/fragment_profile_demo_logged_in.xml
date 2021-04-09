@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingStart="@dimen/medium"
+    android:paddingTop="@dimen/medium"
+    android:paddingEnd="@dimen/medium"
+    tools:context=".profile.ProfileDemoLoggedIn">
+
+    <TextView
+        android:id="@+id/profile_welcome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/profile_logged_welcome"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/dividerLogoutButton"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_welcome" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/groupNoBirds"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="visible"
+        app:constraint_referenced_ids="noBirds"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dividerLogoutButton" />
+
+    <TextView
+        android:id="@+id/noBirds"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/no_birds"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/groupNoBirds"
+        app:layout_constraintEnd_toEndOf="@+id/groupNoBirds"
+        app:layout_constraintStart_toStartOf="@+id/groupNoBirds"
+        app:layout_constraintTop_toTopOf="@+id/groupNoBirds" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/groupBirdsList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:constraint_referenced_ids="yourBirds,userBirdList"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dividerLogoutButton" />
+
+    <TextView
+        android:id="@+id/yourBirds"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/your_birds_demo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/groupBirdsList" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/userBirdList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/groupBirdsList"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/yourBirds"
+        tools:listitem="@layout/profile_bird_card" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

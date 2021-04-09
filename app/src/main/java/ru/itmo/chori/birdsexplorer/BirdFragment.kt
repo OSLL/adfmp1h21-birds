@@ -84,11 +84,15 @@ class BirdFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 
-        val user = Firebase.auth.currentUser // Do read
-        user?.let {
+        Firebase.auth.currentUser?.let { user ->
             if (user.uid == bird.author) {
                 inflater.inflate(R.menu.action_bar_bird_menu, menu)
+                return
             }
+        }
+
+        if (State.isDemoLogin) {
+            inflater.inflate(R.menu.action_bar_bird_menu, menu)
         }
     }
 
@@ -102,24 +106,33 @@ class BirdFragment : Fragment() {
             true
         }
         R.id.action_remove_bird -> {
-            progressBar?.visibility = View.VISIBLE
+            if (State.isDemoLogin) {
+                ErrorDialogFragment(getString(R.string.edit_declined)).show(
+                    childFragmentManager,
+                    getString(R.string.error_edit_bird_demo)
+                )
+            } else {
 
-            firestore.collection("birds").document(bird.id!!).delete()
-                .addOnSuccessListener {
-                    Toast.makeText(
-                        context,
-                        getString(R.string.notification_bird_was_removed, bird.name),
-                        Toast.LENGTH_SHORT
-                    ).show() // It doesn't require too much user attention
-                }.addOnFailureListener {
-                    ErrorDialogFragment(
-                        it.message ?: getString(R.string.unknown_error)
-                    ).show(childFragmentManager, getString(R.string.error_remove_bird))
-                }.addOnCompleteListener {
-                    progressBar?.visibility = View.INVISIBLE
-                }
+                progressBar?.visibility = View.VISIBLE
 
-            childFragmentManager.popBackStack()
+                firestore.collection("birds").document(bird.id!!).delete()
+                    .addOnSuccessListener {
+                        Toast.makeText(
+                            context,
+                            getString(R.string.notification_bird_was_removed, bird.name),
+                            Toast.LENGTH_SHORT
+                        ).show() // It doesn't require too much user attention
+                    }.addOnFailureListener {
+                        ErrorDialogFragment(
+                            it.message ?: getString(R.string.unknown_error)
+                        ).show(childFragmentManager, getString(R.string.error_remove_bird))
+                    }.addOnCompleteListener {
+                        progressBar?.visibility = View.INVISIBLE
+                    }
+
+                childFragmentManager.popBackStack()
+            }
+
             true
         }
         else -> super.onOptionsItemSelected(item)
